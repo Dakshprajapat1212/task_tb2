@@ -1,0 +1,353 @@
+[
+    {
+        "url": "\/api\/library\/classes",
+        "method": "GET",
+        "status": 200,
+        "response": {
+            "success": true,
+            "message": "Library classes fetched successfully",
+            "data": [
+                {
+                    "id": 1,
+                    "name": "Class 1",
+                    "subject": {
+                        "id": 1,
+                        "name": "Math"
+                    },
+                    "class_date": "2026-01-01",
+                    "start_time": "10:00:00",
+                    "end_time": "11:00:00"
+                }
+            ]
+        },
+        "error": null
+    },
+    {
+        "url": "\/api\/library\/classes\/1\/subjects",
+        "method": "GET",
+        "status": 200,
+        "response": {
+            "success": true,
+            "message": "Library subjects fetched successfully",
+            "data": {
+                "class": {
+                    "id": 1,
+                    "name": "Class 1",
+                    "subject": {
+                        "id": 1,
+                        "name": "Math"
+                    },
+                    "class_date": "2026-01-01",
+                    "start_time": "10:00:00",
+                    "end_time": "11:00:00"
+                },
+                "subjects": [
+                    {
+                        "id": 1,
+                        "name": "Math"
+                    }
+                ]
+            }
+        },
+        "error": null
+    },
+    {
+        "url": "\/api\/library\/class-subjects\/1\/topics",
+        "method": "GET",
+        "status": 200,
+        "response": {
+            "success": true,
+            "message": "Library topics fetched successfully",
+            "data": [
+                {
+                    "id": 1,
+                    "class_id": 1,
+                    "subject_id": 1,
+                    "title": "Topic 1",
+                    "description": null,
+                    "display_order": 1,
+                    "status": "active",
+                    "notes_count": 1,
+                    "quiz_id": 1
+                }
+            ]
+        },
+        "error": null
+    },
+    {
+        "url": "\/api\/library\/topics\/1\/notes",
+        "method": "GET",
+        "status": 200,
+        "response": {
+            "success": true,
+            "message": "Topic notes fetched successfully",
+            "data": [
+                {
+                    "id": 1,
+                    "class_id": 1,
+                    "subject_id": 1,
+                    "topic_id": 1,
+                    "title": "Module Note 1",
+                    "file_url": "fake.pdf"
+                }
+            ]
+        },
+        "error": null
+    },
+    {
+        "url": "\/api\/library\/topics\/1\/quiz",
+        "method": "GET",
+        "status": 200,
+        "response": {
+            "success": true,
+            "message": "Topic quiz fetched successfully",
+            "data": {
+                "id": 1,
+                "topic_id": 1,
+                "title": "Legacy Quiz",
+                "passing_marks": 1,
+                "questions": [
+                    {
+                        "id": 1,
+                        "question": "1+1?",
+                        "option_a": "1",
+                        "option_b": "2",
+                        "option_c": "3",
+                        "option_d": "4",
+                        "display_order": 1
+                    }
+                ]
+            }
+        },
+        "error": null
+    },
+    {
+        "url": "\/api\/library\/quizzes\/1\/submit",
+        "method": "POST",
+        "status": 201,
+        "response": {
+            "success": true,
+            "message": "Quiz submitted successfully",
+            "data": {
+                "attempt_id": 1,
+                "quiz_id": 1,
+                "score": 1,
+                "total_questions": 1,
+                "correct_answers": 1,
+                "wrong_answers": 0,
+                "percentage": 100,
+                "result": "pass",
+                "completed_at": "2026-07-07T13:34:45.000000Z"
+            }
+        },
+        "error": null
+    },
+    {
+        "url": "\/api\/library\/quizzes\/1\/result",
+        "method": "GET",
+        "status": 200,
+        "response": {
+            "success": true,
+            "message": "Quiz result fetched successfully",
+            "data": {
+                "attempt_id": 1,
+                "quiz_id": 1,
+                "score": 1,
+                "total_questions": 1,
+                "correct_answers": 1,
+                "wrong_answers": 0,
+                "percentage": 100,
+                "result": "pass",
+                "completed_at": "2026-07-07T13:34:45.000000Z"
+            }
+        },
+        "error": null
+    },
+    {
+        "url": "\/api\/library\/modules\/1\/quiz",
+        "method": "GET",
+        "status": 200,
+        "response": {
+            "success": true,
+            "message": "Module question bank fetched successfully",
+            "data": {
+                "id": 2,
+                "topic_id": 1,
+                "title": "Module Quiz Bank",
+                "passing_marks": 1,
+                "questions": [
+                    {
+                        "id": 2,
+                        "question": "2+2?",
+                        "option_a": "2",
+                        "option_b": "3",
+                        "option_c": "4",
+                        "option_d": "5",
+                        "display_order": 1
+                    }
+                ]
+            }
+        },
+        "error": null
+    },
+    {
+        "url": "\/api\/library\/modules\/1\/flashcards",
+        "method": "GET",
+        "status": 200,
+        "response": {
+            "success": true,
+            "message": "Module flashcards fetched successfully",
+            "data": [
+                {
+                    "id": 2,
+                    "question": "2+2?",
+                    "correct_answer": "4",
+                    "explanation": null
+                }
+            ]
+        },
+        "error": null
+    },
+    {
+        "url": "\/api\/library\/quizzes\/2\/submit",
+        "method": "POST",
+        "status": 201,
+        "response": {
+            "success": true,
+            "message": "Quiz submitted successfully",
+            "data": {
+                "attempt_id": 2,
+                "quiz_id": 2,
+                "score": 1,
+                "total_questions": 1,
+                "correct_answers": 1,
+                "wrong_answers": 0,
+                "percentage": 100,
+                "result": "pass",
+                "completed_at": "2026-07-07T13:34:45.000000Z"
+            }
+        },
+        "error": null
+    },
+    {
+        "url": "\/api\/library\/quizzes\/2\/result",
+        "method": "GET",
+        "status": 200,
+        "response": {
+            "success": true,
+            "message": "Quiz result fetched successfully",
+            "data": {
+                "attempt_id": 2,
+                "quiz_id": 2,
+                "score": 1,
+                "total_questions": 1,
+                "correct_answers": 1,
+                "wrong_answers": 0,
+                "percentage": 100,
+                "result": "pass",
+                "completed_at": "2026-07-07T13:34:45.000000Z"
+            }
+        },
+        "error": null
+    },
+    {
+        "url": "\/api\/v2\/library\/class-subjects\/1\/chapters",
+        "method": "GET",
+        "status": 200,
+        "response": {
+            "success": true,
+            "message": "Chapters fetched successfully",
+            "data": [
+                {
+                    "id": 1,
+                    "class_id": 1,
+                    "subject_id": 1,
+                    "title": "Topic 1",
+                    "description": null,
+                    "display_order": 1,
+                    "status": "active"
+                }
+            ]
+        },
+        "error": null
+    },
+    {
+        "url": "\/api\/v2\/library\/chapters\/1\/topic-notes",
+        "method": "GET",
+        "status": 200,
+        "response": {
+            "success": true,
+            "message": "Topic Notes fetched successfully",
+            "data": [
+                {
+                    "id": 1,
+                    "class_id": 1,
+                    "subject_id": 1,
+                    "chapter_id": 1,
+                    "title": "Module Note 1",
+                    "file_url": "fake.pdf",
+                    "completed_at": null
+                }
+            ]
+        },
+        "error": null
+    },
+    {
+        "url": "\/api\/v2\/library\/chapters\/1\/question-bank",
+        "method": "GET",
+        "status": 200,
+        "response": {
+            "success": true,
+            "message": "Chapter Question Bank fetched successfully",
+            "data": {
+                "id": 1,
+                "chapter_id": 1,
+                "topic_note_id": null,
+                "title": "Legacy Quiz",
+                "passing_marks": 1,
+                "questions": [
+                    {
+                        "id": 1,
+                        "question": "1+1?",
+                        "option_a": "1",
+                        "option_b": "2",
+                        "option_c": "3",
+                        "option_d": "4",
+                        "difficulty_level": "Medium",
+                        "display_order": 1
+                    }
+                ]
+            }
+        },
+        "error": null
+    },
+    {
+        "url": "\/api\/v2\/library\/topic-notes\/1\/question-bank",
+        "method": "GET",
+        "status": 200,
+        "response": {
+            "success": true,
+            "message": "Topic Note Question Bank fetched successfully",
+            "data": {
+                "id": 2,
+                "chapter_id": 1,
+                "topic_note_id": 1,
+                "title": "Module Quiz Bank",
+                "passing_marks": 1,
+                "questions": [
+                    {
+                        "id": 2,
+                        "question": "2+2?",
+                        "option_a": "2",
+                        "option_b": "3",
+                        "option_c": "4",
+                        "option_d": "5",
+                        "difficulty_level": "Medium",
+                        "display_order": 1
+                    }
+                ]
+            }
+        },
+        "error": null
+    }
+]

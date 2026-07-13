@@ -1,0 +1,28 @@
+
+  Migration name .............................................. Batch / Status  
+  2014_10_11_000000_create_mas_roles_table ........................... [1] Ran  
+  2014_10_12_100000_create_password_resets_table ..................... [1] Ran  
+  2019_08_19_000000_create_failed_jobs_table ......................... [1] Ran  
+  2019_12_14_000001_create_personal_access_tokens_table .............. [1] Ran  
+  2026_05_19_080000_create_users_table ............................... [1] Ran  
+  2026_05_19_080100_create_faculties_table ........................... [1] Ran  
+  2026_05_19_080200_create_subjects_table ............................ [1] Ran  
+  2026_05_19_085451_create_classes_table ............................. [1] Ran  
+  2026_05_19_090000_create_students_table ............................ [1] Ran  
+  2026_05_19_120000_create_recordings_table .......................... [1] Ran  
+  2026_05_19_121500_create_notes_table ............................... [1] Ran  
+  2026_05_25_064303_change_password_column_in_users_table ............ [1] Ran  
+  2026_05_27_130437_create_assign_homework_table ..................... [1] Ran  
+  2026_05_27_181049_create_submit_homework_table ..................... [1] Ran  
+  2026_05_28_055222_create_enrollments_table ......................... [1] Ran  
+  2026_07_01_000000_enable_google_oauth_in_users_table ............... [1] Ran  
+  2026_07_03_000001_create_topics_table .............................. [1] Ran  
+  2026_07_03_000002_add_topic_id_to_notes_table ...................... [1] Ran  
+  2026_07_03_000003_create_student_note_progress_table ............... [1] Ran  
+  2026_07_03_000004_create_quizzes_table ............................. [1] Ran  
+  2026_07_03_000005_create_quiz_questions_table ...................... [1] Ran  
+  2026_07_03_000006_create_quiz_attempts_table ....................... [1] Ran  
+  2026_07_03_000007_create_quiz_answers_table ........................ [1] Ran  
+  2026_07_06_091928_add_note_id_to_quizzes_table ..................... [1] Ran  
+  2026_07_06_095039_make_topic_id_nullable_in_quizzes_table .......... [1] Ran  
+

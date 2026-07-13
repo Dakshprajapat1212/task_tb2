@@ -1,0 +1,328 @@
+{
+    "message": "Call to undefined method App\\Models\\User::createToken()",
+    "exception": "BadMethodCallException",
+    "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Support/Traits/ForwardsCalls.php",
+    "line": 71,
+    "trace": [
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Support/Traits/ForwardsCalls.php",
+            "line": 36,
+            "function": "throwBadMethodCallException",
+            "class": "Illuminate\\Database\\Eloquent\\Model",
+            "type": "::"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php",
+            "line": 2330,
+            "function": "forwardCallTo",
+            "class": "Illuminate\\Database\\Eloquent\\Model",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/app/Http/Controllers/AuthController.php",
+            "line": 323,
+            "function": "__call",
+            "class": "Illuminate\\Database\\Eloquent\\Model",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Routing/Controller.php",
+            "line": 54,
+            "function": "login",
+            "class": "App\\Http\\Controllers\\AuthController",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Routing/ControllerDispatcher.php",
+            "line": 43,
+            "function": "callAction",
+            "class": "Illuminate\\Routing\\Controller",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Routing/Route.php",
+            "line": 259,
+            "function": "dispatch",
+            "class": "Illuminate\\Routing\\ControllerDispatcher",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Routing/Route.php",
+            "line": 205,
+            "function": "runController",
+            "class": "Illuminate\\Routing\\Route",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Routing/Router.php",
+            "line": 798,
+            "function": "run",
+            "class": "Illuminate\\Routing\\Route",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php",
+            "line": 141,
+            "function": "{closure:Illuminate\\Routing\\Router::runRouteWithinStack():797}",
+            "class": "Illuminate\\Routing\\Router",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Routing/Middleware/SubstituteBindings.php",
+            "line": 50,
+            "function": "{closure:Illuminate\\Pipeline\\Pipeline::prepareDestination():139}",
+            "class": "Illuminate\\Pipeline\\Pipeline",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php",
+            "line": 180,
+            "function": "handle",
+            "class": "Illuminate\\Routing\\Middleware\\SubstituteBindings",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Routing/Middleware/ThrottleRequests.php",
+            "line": 126,
+            "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():155}:156}",
+            "class": "Illuminate\\Pipeline\\Pipeline",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Routing/Middleware/ThrottleRequests.php",
+            "line": 92,
+            "function": "handleRequest",
+            "class": "Illuminate\\Routing\\Middleware\\ThrottleRequests",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Routing/Middleware/ThrottleRequests.php",
+            "line": 54,
+            "function": "handleRequestUsingNamedLimiter",
+            "class": "Illuminate\\Routing\\Middleware\\ThrottleRequests",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php",
+            "line": 180,
+            "function": "handle",
+            "class": "Illuminate\\Routing\\Middleware\\ThrottleRequests",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/sanctum/src/Http/Middleware/EnsureFrontendRequestsAreStateful.php",
+            "line": 25,
+            "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():155}:156}",
+            "class": "Illuminate\\Pipeline\\Pipeline",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php",
+            "line": 141,
+            "function": "{closure:Laravel\\Sanctum\\Http\\Middleware\\EnsureFrontendRequestsAreStateful::handle():24}",
+            "class": "Laravel\\Sanctum\\Http\\Middleware\\EnsureFrontendRequestsAreStateful",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php",
+            "line": 116,
+            "function": "{closure:Illuminate\\Pipeline\\Pipeline::prepareDestination():139}",
+            "class": "Illuminate\\Pipeline\\Pipeline",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/sanctum/src/Http/Middleware/EnsureFrontendRequestsAreStateful.php",
+            "line": 24,
+            "function": "then",
+            "class": "Illuminate\\Pipeline\\Pipeline",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php",
+            "line": 180,
+            "function": "handle",
+            "class": "Laravel\\Sanctum\\Http\\Middleware\\EnsureFrontendRequestsAreStateful",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php",
+            "line": 116,
+            "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():155}:156}",
+            "class": "Illuminate\\Pipeline\\Pipeline",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Routing/Router.php",
+            "line": 797,
+            "function": "then",
+            "class": "Illuminate\\Pipeline\\Pipeline",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Routing/Router.php",
+            "line": 776,
+            "function": "runRouteWithinStack",
+            "class": "Illuminate\\Routing\\Router",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Routing/Router.php",
+            "line": 740,
+            "function": "runRoute",
+            "class": "Illuminate\\Routing\\Router",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Routing/Router.php",
+            "line": 729,
+            "function": "dispatchToRoute",
+            "class": "Illuminate\\Routing\\Router",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php",
+            "line": 190,
+            "function": "dispatch",
+            "class": "Illuminate\\Routing\\Router",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php",
+            "line": 141,
+            "function": "{closure:Illuminate\\Foundation\\Http\\Kernel::dispatchToRouter():187}",
+            "class": "Illuminate\\Foundation\\Http\\Kernel",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php",
+            "line": 21,
+            "function": "{closure:Illuminate\\Pipeline\\Pipeline::prepareDestination():139}",
+            "class": "Illuminate\\Pipeline\\Pipeline",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ConvertEmptyStringsToNull.php",
+            "line": 31,
+            "function": "handle",
+            "class": "Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php",
+            "line": 180,
+            "function": "handle",
+            "class": "Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php",
+            "line": 21,
+            "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():155}:156}",
+            "class": "Illuminate\\Pipeline\\Pipeline",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TrimStrings.php",
+            "line": 40,
+            "function": "handle",
+            "class": "Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php",
+            "line": 180,
+            "function": "handle",
+            "class": "Illuminate\\Foundation\\Http\\Middleware\\TrimStrings",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ValidatePostSize.php",
+            "line": 27,
+            "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():155}:156}",
+            "class": "Illuminate\\Pipeline\\Pipeline",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php",
+            "line": 180,
+            "function": "handle",
+            "class": "Illuminate\\Foundation\\Http\\Middleware\\ValidatePostSize",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/PreventRequestsDuringMaintenance.php",
+            "line": 86,
+            "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():155}:156}",
+            "class": "Illuminate\\Pipeline\\Pipeline",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php",
+            "line": 180,
+            "function": "handle",
+            "class": "Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Http/Middleware/HandleCors.php",
+            "line": 62,
+            "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():155}:156}",
+            "class": "Illuminate\\Pipeline\\Pipeline",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php",
+            "line": 180,
+            "function": "handle",
+            "class": "Illuminate\\Http\\Middleware\\HandleCors",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Http/Middleware/TrustProxies.php",
+            "line": 39,
+            "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():155}:156}",
+            "class": "Illuminate\\Pipeline\\Pipeline",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php",
+            "line": 180,
+            "function": "handle",
+            "class": "Illuminate\\Http\\Middleware\\TrustProxies",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php",
+            "line": 116,
+            "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():155}:156}",
+            "class": "Illuminate\\Pipeline\\Pipeline",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php",
+            "line": 165,
+            "function": "then",
+            "class": "Illuminate\\Pipeline\\Pipeline",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php",
+            "line": 134,
+            "function": "sendRequestThroughRouter",
+            "class": "Illuminate\\Foundation\\Http\\Kernel",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/public/index.php",
+            "line": 51,
+            "function": "handle",
+            "class": "Illuminate\\Foundation\\Http\\Kernel",
+            "type": "->"
+        },
+        {
+            "file": "/Users/daksh/intern 2/task_tutorials_backend/vendor/laravel/framework/src/Illuminate/Foundation/resources/server.php",
+            "line": 16,
+            "function": "require_once"
+        }
+    ]
+}

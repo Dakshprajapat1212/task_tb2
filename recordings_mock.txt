@@ -1,0 +1,68 @@
+Created At: 2026-07-07T13:36:38Z
+Completed At: 2026-07-07T13:36:38Z
+File Path: `file:///Users/daksh/intern%202/task-tutorials/src/pages/Recordings.jsx`
+Total Lines: 1168
+Total Bytes: 53445
+Showing lines 1 to 60
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: import { useEffect, useRef, useState } from 'react';
+2: import { motion, AnimatePresence } from 'framer-motion';
+3: import { Video, Clock, Search, ChevronDown, ArrowLeft, Play, Pause, Download, Check, X, Tv, Volume2, Volume1, VolumeX, Sparkles, Settings, List, MapPin, HelpCircle, Maximize } from 'lucide-react';
+4: import TopBar        from '../components/TopBar';
+5: import { BottomNav, SidebarNav } from '../components/Nav';
+6: import PageTransition  from '../components/PageTransition';
+7: import SkeletonGrid    from '../components/SkeletonGrid';
+8: import EmptyState      from '../components/EmptyState';
+9: import { useDebounce } from '../hooks/useDebounce';
+10: import { useToast } from '../hooks/useToast';
+11: import ToastContainer from '../components/Toast';
+12: import Confetti from '../components/Confetti';
+13: import logoImg from '../assets/logo.png';
+14: import { trackStudyTime } from '../utils/studyTracker';
+15: 
+16: const recordings = [
+17:   { subject: 'Simple Algebra',              videos: 12, ago: '2 days ago',  isNew: false },
+18:   { subject: 'Exponents',                   videos: 8,  ago: 'Yesterday',   isNew: true  },
+19:   { subject: 'Matter And Exponents',        videos: 15, ago: '5 days ago',  isNew: false },
+20:   { subject: 'Rational Number',             videos: 6,  ago: '1 week ago',  isNew: false },
+21:   { subject: 'Fundamental Concept',         videos: 20, ago: '3 days ago',  isNew: true  },
+22:   { subject: 'Physical & Chemical Changes', videos: 10, ago: '2 weeks ago', isNew: false },
+23:   { subject: 'Transportation in Plants',    videos: 14, ago: '4 days ago',  isNew: false },
+24: ];
+25: 
+26: const classes = ['Xth PCMB', 'IXth PCMB', 'VIIIth Science'];
+27: 
+28: // Detailed mock lectures database for select courses
+29: const mockLectures = {
+30:   'Exponents': [
+31:     { 
+32:       id: 'exp-1',
+33:       title: 'Lecture 1: Introduction to Power Rules', 
+34:       duration: '32:15', 
+35:       date: '3 days ago', 
+36:       watched: true,
+37:       teacher: 'Mr. Ravi Sharma',
+38:       codeSnippet: `// Exponents Rules Example\nfunction multiplyPowers(base, exp1, exp2) {\n  // Rule: x^a * x^b = x^(a + b)\n  return Math.pow(base, exp1 + exp2);\n}\n\nconsole.log(multiplyPowers(2, 3, 4)); // Output: 128 (2^7)`,
+39:       chapters: [
+40:         { name: 'Introduction to Powers', time: '00:00', sec: 0 },
+41:         { name: 'Base and Exponents Definition', time: '08:12', sec: 492 },
+42:         { name: 'Multiplying Powers with Same Base', time: '18:40', sec: 1120 },
+43:         { name: 'Class Practice Problems', time: '26:50', sec: 1610 }
+44:       ],
+45:       quiz: [
+46:         {
+47:           question: 'What is the value of 2³ * 2⁴?',
+48:           options: ['2¹²', '2⁷', '4⁷', '128'],
+49:           answerIndex: 1
+50:         },
+51:         {
+52:           question: 'Which algebraic law represents the product of powers rule?',
+53:           options: ['x^a * x^b = x^(a+b)', 'x^a * x^b = x^(a*b)', '(x^a)^b = x^(a*b)', 'x^a / x^b = x^(a-b)'],
+54:           answerIndex: 0
+55:         },
+56:         {
+57:           question: 'Simplify the expression: (3²)³.',
+58:           options: ['3⁵', '3⁶', '9⁶', '27'],
+59:           answerIndex: 1
+60:         }
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

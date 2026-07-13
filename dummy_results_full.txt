@@ -1,0 +1,60 @@
+Created At: 2026-07-07T17:31:56Z
+Completed At: 2026-07-07T17:31:56Z
+
+				The command completed successfully.
+				Output:
+				Created At: 2026-07-07T17:28:09Z
+Completed At: 2026-07-07T17:31:38Z
+
+				The command completed successfully.
+				Output:
+				FOUND MOCK DATA BLOCK
+Created At: 2026-07-07T13:34:51Z
+Completed At: 2026-07-07T13:34:51Z
+
+				The command failed with exit code: 1
+				Output:
+				src/index.css:2421:.mock-player-box {
+src/index.css:2431:.mock-slides-area {
+src/index.css:2747:.mock-player-box:fullscreen {
+src/index.css:2757:.mock-player-box:fullscreen .mock-slides-area {
+src/index.css:2762:.mock-player-box:fullscreen .player-code-content {
+src/index.css:2879:.mock-video-screen {
+src/index.css:2893:.mock-video-poster {
+src/index.css:2900:.mock-video-...
+FOUND MOCK DATA BLOCK
+Created At: 2026-07-07T13:35:55Z
+Completed At: 2026-07-07T13:35:56Z
+File Path: `file:///Users/daksh/intern%202/task-tutorials/src/pages/Doubts/Doubts.jsx`
+Total Lines: 319
+Total Bytes: 10433
+Showing lines 1 to 319
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: import "./Doubts.css";
+2: import { useSta...
+FOUND MOCK DATA BLOCK
+Created At: 2026-07-07T13:36:31Z
+Completed At: 2026-07-07T13:36:31Z
+The following changes were made by the multi_replace_file_content tool to: /Users/daksh/intern 2/task-tutorials/src/pages/Doubts/Doubts.jsx. If relevant, proactively run terminal commands to execute this code for the USER. Don't ask for permission.
+[diff_block_start]
+@@ -30,20 +30,7 @@
+   },
+ };
+ 
+-const DUMMY_RESULTS = [
+-  {
+-    id: 1,
+-    question: "How to find sin 30°?",
+-    answer:
+-      "To find sin 30°, we use a stand...
+FOUND MOCK DATA BLOCK
+Created At: 2026-07-07T13:36:38Z
+Completed At: 2026-07-07T13:36:38Z
+File Path: `file:///Users/daksh/intern%202/task-tutorials/src/pages/Recordings.jsx`
+Total Lines: 1168
+Total Bytes: 53445
+Showing lines 1 to 60
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: import { useEffect, useRef, useState } from ...
+
+

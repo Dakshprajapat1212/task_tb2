@@ -1,0 +1,239 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\AssignHomework;
+use App\Models\ClassModel;
+use App\Models\Enrollment;
+use App\Models\Faculty;
+use App\Models\Student;
+use App\Models\SubmitHomework;
+use Illuminate\Http\Request;
+
+class SubmitHomeworkController extends Controller
+{
+    /*
+    |--------------------------------------------------------------------------
+    | GET SUBMISSIONS
+    |--------------------------------------------------------------------------
+    */
+    public function index()
+    {
+        if (auth()->user()->role_id == 3) {
+
+            $submissions = SubmitHomework::with([
+                'assignHomework.class.subject',
+                'student.user'
+            ])->get();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'All homework submissions fetched successfully',
+                'data' => $submissions
+            ], 200);
+        }
+
+        if (auth()->user()->role_id == 2) {
+
+            $faculty = Faculty::where('user_id', auth()->id())->first();
+
+            if (!$faculty) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Faculty profile not found'
+                ], 404);
+            }
+
+            $classIds = ClassModel::forFaculty($faculty->id)->pluck('id');
+            $homeworkIds = AssignHomework::whereIn('class_id', $classIds)->pluck('id');
+
+            $submissions = SubmitHomework::whereIn('assign_homework_id', $homeworkIds)
+                ->with([
+                    'assignHomework.class.subject',
+                    'student.user'
+                ])
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Faculty homework submissions fetched successfully',
+                'data' => $submissions
+            ], 200);
+        }
+
+        $student = Student::where('user_id', auth()->id())->first();
+
+        if (!$student) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Student profile not found'
+            ], 404);
+        }
+
+        $submissions = SubmitHomework::where('student_id', $student->id)
+            ->with([
+                'assignHomework.class.subject',
+                'student.user'
+            ])
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'My homework submissions fetched successfully',
+            'data' => $submissions
+        ], 200);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | CREATE SUBMISSION
+    |--------------------------------------------------------------------------
+    */
+    public function store(Request $request)
+    {
+        if (auth()->user()->role_id != 1) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Only students can submit homework'
+            ], 403);
+        }
+
+        $request->validate([
+            'assign_homework_id' => 'required|exists:assign_homeworks,id',
+            'file' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,txt,zip|max:10240',
+            'file_url' => 'nullable|url'
+        ]);
+
+        if (!$request->hasFile('file') && !$request->filled('file_url')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Either file or file_url is required'
+            ], 422);
+        }
+
+        $student = Student::where('user_id', auth()->id())->first();
+
+        if (!$student) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please complete enrollment approval first'
+            ], 403);
+        }
+
+        $homework = AssignHomework::find($request->assign_homework_id);
+
+        if (!$this->studentCanAccessHomework($homework)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You can submit only for homework from approved enrolled classes'
+            ], 403);
+        }
+
+        $existingSubmission = SubmitHomework::where('assign_homework_id', $homework->id)
+            ->where('student_id', $student->id)
+            ->first();
+
+        if ($existingSubmission) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Homework already submitted',
+                'data' => $existingSubmission
+            ], 409);
+        }
+
+        $filePath = $request->filled('file_url')
+            ? $request->file_url
+            : $request->file('file')->store('homework-submissions', 'public');
+
+        $submission = SubmitHomework::create([
+            'assign_homework_id' => $homework->id,
+            'student_id' => $student->id,
+            'file' => $filePath,
+            'status' => 'pending',
+            'remarks' => null
+        ]);
+
+        $submission->load([
+            'assignHomework.class.subject',
+            'student.user'
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Homework submitted successfully',
+            'data' => $submission
+        ], 201);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | REVIEW SUBMISSION
+    |--------------------------------------------------------------------------
+    */
+    public function update(Request $request, $id)
+    {
+        if (!in_array(auth()->user()->role_id, [2, 3])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized access'
+            ], 403);
+        }
+
+        $submission = SubmitHomework::with('assignHomework')->find($id);
+
+        if (!$submission) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Homework submission not found'
+            ], 404);
+        }
+
+        if (auth()->user()->role_id == 2 && !$this->facultyCanReviewSubmission($submission)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You can review only submissions from your own classes'
+            ], 403);
+        }
+
+        $request->validate([
+            'status' => 'required|string|in:pending,approved,rejected',
+            'remarks' => 'nullable|string|max:1000'
+        ]);
+
+        $submission->update([
+            'status' => $request->status,
+            'remarks' => $request->remarks
+        ]);
+
+        $submission->load([
+            'assignHomework.class.subject',
+            'student.user'
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Homework submission reviewed successfully',
+            'data' => $submission
+        ], 200);
+    }
+
+    private function studentCanAccessHomework(AssignHomework $homework)
+    {
+        return Enrollment::where('user_id', auth()->id())
+            ->where('class_id', $homework->class_id)
+            ->where('status', 'approved')
+            ->exists();
+    }
+
+    private function facultyCanReviewSubmission(SubmitHomework $submission)
+    {
+        $faculty = Faculty::where('user_id', auth()->id())->first();
+
+        if (!$faculty || !$submission->assignHomework) {
+            return false;
+        }
+
+        return ClassModel::forFaculty($faculty->id)->where('id', $submission->assignHomework->class_id)
+            ->exists();
+    }
+}
