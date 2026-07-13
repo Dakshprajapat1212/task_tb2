@@ -24,16 +24,25 @@ class Enrollment extends Model
     */
 
     protected $fillable = [
-
         'user_id',
-
         'class_id',
-
         'dob',
-
         'address',
-
-        'status'
+        'status',
+        'full_name',
+        'email',
+        'mobile',
+        'gender',
+        'photo',
+        'school',
+        'board',
+        'course',
+        'batch_mode',
+        'father_name',
+        'father_occupation',
+        'mother_name',
+        'parent_mobile',
+        'marksheet'
     ];
 
     /*

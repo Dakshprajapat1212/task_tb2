@@ -73,7 +73,22 @@ class EnrollmentController extends Controller
     'class_id' => 'required_without:class_ids|exists:classes,id',
 
     'dob' => 'required|date',
-    'address' => 'required|string'
+    'address' => 'required|string',
+    
+    'fullName' => 'nullable|string',
+    'email' => 'nullable|email',
+    'mobile' => 'nullable|string',
+    'gender' => 'nullable|string',
+    'photo' => 'nullable|string',
+    'school' => 'nullable|string',
+    'board' => 'nullable|string',
+    'course' => 'nullable|string',
+    'batchMode' => 'nullable|string',
+    'fatherName' => 'nullable|string',
+    'fatherOccupation' => 'nullable|string',
+    'motherName' => 'nullable|string',
+    'parentMobile' => 'nullable|string',
+    'marksheet' => 'nullable|string',
 ]);
         $isSingleClassRequest = !$request->has('class_ids');
 
@@ -143,7 +158,23 @@ class EnrollmentController extends Controller
 
                 'address' => $request->address,
 
-                'status' => 'pending'
+                'status' => 'pending',
+                
+                'full_name' => $request->fullName,
+                'email' => $request->email,
+                'mobile' => $request->mobile,
+                'gender' => $request->gender,
+                'photo' => $request->photo,
+                'school' => $request->school,
+                'board' => $request->board,
+                'course' => $request->course,
+                'batch_mode' => $request->batchMode,
+                'father_name' => $request->fatherName,
+                'father_occupation' => $request->fatherOccupation,
+                'mother_name' => $request->motherName,
+                'parent_mobile' => $request->parentMobile,
+                'marksheet' => $request->marksheet,
+
             ]);
         }
 
@@ -340,7 +371,22 @@ class EnrollmentController extends Controller
 
                     'dob' => $enrollment->dob,
 
-                    'address' => $enrollment->address
+                    'address' => $enrollment->address,
+
+                    'full_name' => $enrollment->full_name,
+                    'email' => $enrollment->email,
+                    'mobile' => $enrollment->mobile,
+                    'gender' => $enrollment->gender,
+                    'photo' => $enrollment->photo,
+                    'school' => $enrollment->school,
+                    'board' => $enrollment->board,
+                    'course' => $enrollment->course,
+                    'batch_mode' => $enrollment->batch_mode,
+                    'father_name' => $enrollment->father_name,
+                    'father_occupation' => $enrollment->father_occupation,
+                    'mother_name' => $enrollment->mother_name,
+                    'parent_mobile' => $enrollment->parent_mobile,
+                    'marksheet' => $enrollment->marksheet,
                 ]);
             }
         }
