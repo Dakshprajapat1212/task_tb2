@@ -10,7 +10,6 @@ use App\Models\ClassModel;
 use App\Models\Subject;
 use App\Models\Chapter;
 use App\Models\TopicNote;
-use App\Models\Quiz;
 use App\Models\QuizQuestion;
 use App\Models\Enrollment;
 use App\Models\Recording;
@@ -110,8 +109,7 @@ class DatabaseSeeder extends Seeder
                     ]);
 
                     // Question Bank for Chapter
-                    $chapterQuiz = Quiz::factory()->create(['chapter_id' => $chapter->id, 'topic_note_id' => null]);
-                    $this->createQuestions($chapterQuiz);
+                    $this->createQuestions($chapter->id, null);
 
                     // Create Topic Notes
                     for ($n = 1; $n <= 2; $n++) {
@@ -122,8 +120,7 @@ class DatabaseSeeder extends Seeder
                         ]);
 
                         // Question Bank for Topic Note
-                        $noteQuiz = Quiz::factory()->create(['chapter_id' => $chapter->id, 'topic_note_id' => $topicNote->id]);
-                        $this->createQuestions($noteQuiz);
+                        $this->createQuestions($chapter->id, $topicNote->id);
 
                         // Progress for random students
                         foreach(array_rand($students, 5) as $studentIdx) {
@@ -175,7 +172,7 @@ class DatabaseSeeder extends Seeder
         $this->command->info('Database Seeded Successfully!');
     }
 
-    private function createQuestions($quiz)
+    private function createQuestions($chapterId, $topicNoteId)
     {
         $mockQuestions = [
             'How to find sin 30°?',
@@ -202,7 +199,8 @@ class DatabaseSeeder extends Seeder
 
         foreach ($mockQuestions as $index => $questionText) {
             QuizQuestion::factory()->create([
-                'quiz_id' => $quiz->id,
+                'chapter_id' => $chapterId,
+                'topic_note_id' => $topicNoteId,
                 'question' => $questionText,
                 'difficulty_level' => match(true) {
                     $index <= 5 => 'Easy',
