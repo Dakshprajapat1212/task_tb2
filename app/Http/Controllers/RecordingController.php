@@ -255,13 +255,17 @@ class RecordingController extends Controller
     */
 
     // GET /classes/{class_id}/recordings
-    public function studentClassRecordings($class_id)
+    public function studentClassRecordings(Request $request, $class_id)
     {
         $this->ensureStudentEnrolledInClass($class_id);
 
-        $recordings = Recording::where('class_id', $class_id)
-            ->with('class')
-            ->get();
+        $query = Recording::where('class_id', $class_id);
+
+        if ($request->has('subject_id')) {
+            $query->where('subject_id', $request->subject_id);
+        }
+
+        $recordings = $query->with(['class', 'subject', 'chapter'])->get();
 
         return response()->json([
             'success' => true,

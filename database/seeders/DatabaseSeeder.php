@@ -314,6 +314,34 @@ class DatabaseSeeder extends Seeder
                         'status' => 'active'
                     ]);
 
+                    // Seed 2 Recordings for this Chapter (one with chapters timeline, one without)
+                    Recording::create([
+                        'class_id' => $classModel->id,
+                        'subject_id' => $subjectModel->id,
+                        'chapter_id' => $chapterModel->id,
+                        'topic' => 'Lecture 1: Introduction to ' . $chapterModel->title,
+                        'teacher_name' => $faculty->user->name,
+                        'duration' => rand(30, 45),
+                        'video_link' => '/chemistry_lecture.mp4',
+                        'chapters' => [
+                            ['name' => 'Introduction & Base Definition', 'time' => '00:00', 'sec' => 0],
+                            ['name' => 'Core Rules & Formula Overview', 'time' => '05:10', 'sec' => 310],
+                            ['name' => 'Classroom Exercises', 'time' => '12:45', 'sec' => 765],
+                            ['name' => 'Summary & Q&A', 'time' => '20:15', 'sec' => 1215]
+                        ]
+                    ]);
+
+                    Recording::create([
+                        'class_id' => $classModel->id,
+                        'subject_id' => $subjectModel->id,
+                        'chapter_id' => $chapterModel->id,
+                        'topic' => 'Lecture 2: Practice Problems on ' . $chapterModel->title,
+                        'teacher_name' => $faculty->user->name,
+                        'duration' => rand(25, 40),
+                        'video_link' => '/chemistry_lecture.mp4',
+                        'chapters' => null // No timeline chapters (hides tab)
+                    ]);
+
                     // Create Topic Notes
                     foreach ($chData['notes'] as $nIndex => $nData) {
                         $topicNoteModel = TopicNote::create([
@@ -364,26 +392,6 @@ class DatabaseSeeder extends Seeder
                     'dob' => $student->dob,
                     'address' => $student->address,
                     'status' => 'approved'
-                ]);
-            }
-        }
-
-        // 9. Create Recordings (LMS Video lectures)
-        $this->command->info('Creating Recordings...');
-        $mockLectures = [
-            'Lecture 1: Core Definitions & Intro',
-            'Lecture 2: Formulas Derivation',
-            'Lecture 3: Exercise Problems & NCERT Solutions',
-            'Lecture 4: Advanced Concepts & Board Questions',
-        ];
-
-        foreach ($classes as $class) {
-            foreach ($mockLectures as $lectureTitle) {
-                Recording::create([
-                    'class_id' => $class->id,
-                    'topic' => $class->name . " - " . $lectureTitle,
-                    'duration' => 60,
-                    'video_link' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
                 ]);
             }
         }
