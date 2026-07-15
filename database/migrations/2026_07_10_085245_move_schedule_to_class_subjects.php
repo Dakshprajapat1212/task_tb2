@@ -22,6 +22,7 @@ return new class extends Migration
             $table->date('class_date')->nullable();
             $table->time('start_time')->nullable();
             $table->time('end_time')->nullable();
+            $table->string('stream_url', 255)->nullable();
         });
     }
 
@@ -33,7 +34,7 @@ return new class extends Migration
     public function down()
     {
         Schema::table('class_subjects', function (Blueprint $table) {
-            $table->dropColumn(['class_link', 'class_date', 'start_time', 'end_time']);
+            $table->dropColumn(['class_link', 'class_date', 'start_time', 'end_time', 'stream_url']);
         });
 
         Schema::table('classes', function (Blueprint $table) {

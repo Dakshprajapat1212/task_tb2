@@ -299,7 +299,8 @@ class DatabaseSeeder extends Seeder
                     'class_link' => 'https://meet.google.com/xyz-fake-link-' . rand(100, 999),
                     'class_date' => \Carbon\Carbon::today()->addDays(rand(1, 15))->format('Y-m-d'),
                     'start_time' => '10:00:00',
-                    'end_time'   => '12:00:00'
+                    'end_time'   => '12:00:00',
+                    'stream_url' => '/chemistry_lecture.mp4'
                 ]);
 
                 // Create Chapters
