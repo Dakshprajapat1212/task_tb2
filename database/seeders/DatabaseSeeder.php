@@ -25,6 +25,24 @@ class DatabaseSeeder extends Seeder
     {
         $faker = Faker::create();
 
+        // 1. Truncate existing tables to avoid duplicate entries and clean up faker data
+        $this->command->info('Cleaning database...');
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        User::truncate();
+        Faculty::truncate();
+        Student::truncate();
+        ClassModel::truncate();
+        Subject::truncate();
+        Chapter::truncate();
+        TopicNote::truncate();
+        QuizQuestion::truncate();
+        Enrollment::truncate();
+        Recording::truncate();
+        StudentNoteProgress::truncate();
+        QuizAttempt::truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
+        // 2. Create Roles
         $this->command->info('Creating Roles...');
         DB::table('mas_roles')->insertOrIgnore([
             ['id' => 1, 'name' => 'student'],
@@ -32,6 +50,7 @@ class DatabaseSeeder extends Seeder
             ['id' => 3, 'name' => 'admin'],
         ]);
 
+        // 3. Create Admin
         $this->command->info('Creating Admin...');
         User::create([
             'role_id' => 3,
@@ -41,10 +60,18 @@ class DatabaseSeeder extends Seeder
             'phone_no' => '9999999999'
         ]);
 
+        // 4. Create Faculty
         $this->command->info('Creating Faculty...');
         $faculties = [];
+        $facultyNames = ['Mr. Ravi Sharma', 'Ms. Priya Nair', 'Shakshi Sharma'];
         for ($i = 1; $i <= 3; $i++) {
-            $user = User::factory()->create(['role_id' => 2, 'email' => "faculty{$i}@tasktutorials.com", 'password' => Hash::make('Password@123')]);
+            $user = User::create([
+                'role_id' => 2,
+                'name' => $facultyNames[$i - 1],
+                'email' => "faculty{$i}@tasktutorials.com",
+                'password' => Hash::make('Password@123'),
+                'phone_no' => '88888888' . $i
+            ]);
             $faculties[] = Faculty::create([
                 'user_id' => $user->id,
                 'qualification' => 'PhD in Education',
@@ -52,81 +79,271 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
+        // 5. Create Students
         $this->command->info('Creating Students...');
         $students = [];
-        for ($i = 1; $i <= 30; $i++) {
-            $user = User::factory()->create(['role_id' => 1, 'email' => "student{$i}@tasktutorials.com", 'password' => Hash::make('Password@123')]);
+        for ($i = 1; $i <= 15; $i++) {
+            $user = User::create([
+                'role_id' => 1,
+                'name' => "Student {$i}",
+                'email' => "student{$i}@tasktutorials.com",
+                'password' => Hash::make('Password@123'),
+                'phone_no' => '77777777' . str_pad($i, 2, '0', STR_PAD_LEFT)
+            ]);
             $students[] = Student::create([
                 'user_id' => $user->id,
                 'dob' => now()->subYears(15),
-                'address' => '123 Test Ave',
+                'address' => '123 Test Ave, City Branch',
             ]);
         }
 
-        $this->command->info('Creating Classes, Subjects, Chapters, Notes, and Quizzes...');
-        $classes = [];
-        for ($c = 1; $c <= 5; $c++) {
-            $faculty = $faculties[array_rand($faculties)];
-            
-            $mockSubjects = [
-                'Simple Algebra',
-                'Exponents',
-                'Matter And Exponents',
-                'Rational Number',
-                'Fundamental Concept',
-                'Physical & Chemical Changes',
-                'Transportation in Plants'
-            ];
-            
-            $subjects = [];
-            foreach (array_rand(array_flip($mockSubjects), 5) as $mockSubjectName) {
-                $subjects[] = Subject::factory()->create([
-                    'name' => $mockSubjectName
-                ]);
-            }
+        // 6. Structured Curriculum Map (CBSE/ICSE Style)
+        $curriculum = [
+            'Grade 8' => [
+                'Mathematics' => [
+                    [
+                        'title' => 'Rational Numbers',
+                        'desc' => 'Properties of rational numbers, representation on number line, and finding rational numbers between two rational numbers.',
+                        'notes' => [
+                            ['title' => 'Rational Numbers Basics & Core Concepts', 'file' => 'rational_numbers_basics.pdf'],
+                            ['title' => 'Solved Examples & NCERT Exercises', 'file' => 'rational_numbers_practice.pdf'],
+                        ],
+                        'questions' => [
+                            ['q' => 'Which of the following is the additive inverse of 2/3?', 'a' => '-2/3', 'b' => '3/2', 'c' => '-3/2', 'd' => '1', 'opt' => 'a', 'ans' => '-2/3'],
+                            ['q' => 'What is the multiplicative identity for rational numbers?', 'a' => '0', 'b' => '1', 'c' => '-1', 'd' => 'None', 'opt' => 'b', 'ans' => '1'],
+                        ]
+                    ],
+                    [
+                        'title' => 'Exponents and Powers',
+                        'desc' => 'Laws of exponents, negative exponents, and standard form representation of very small or large numbers.',
+                        'notes' => [
+                            ['title' => 'Exponents Laws & Formulas', 'file' => 'exponents_laws.pdf'],
+                            ['title' => 'Powers Practice Worksheet', 'file' => 'powers_practice_problems.pdf'],
+                        ],
+                        'questions' => [
+                            ['q' => 'What is the value of 2^-3?', 'a' => '8', 'b' => '-8', 'c' => '1/8', 'd' => '-1/8', 'opt' => 'c', 'ans' => '1/8'],
+                            ['q' => 'What is the product of 5^2 and 5^3?', 'a' => '5^5', 'b' => '5^6', 'c' => '25^5', 'd' => '25^6', 'opt' => 'a', 'ans' => '5^5'],
+                        ]
+                    ]
+                ],
+                'Biology' => [
+                    [
+                        'title' => 'Crop Production & Management',
+                        'desc' => 'Agricultural practices, preparation of soil, sowing, adding manure and fertilizers, irrigation, harvesting, and storage.',
+                        'notes' => [
+                            ['title' => 'Agricultural Practices Overview', 'file' => 'agricultural_practices_overview.pdf'],
+                            ['title' => 'Soil Preparation & Irrigation Guide', 'file' => 'soil_preparation_irrigation_guide.pdf'],
+                        ],
+                        'questions' => [
+                            ['q' => 'Which of the following is a Kharif crop?', 'a' => 'Wheat', 'b' => 'Paddy', 'c' => 'Gram', 'd' => 'Mustard', 'opt' => 'b', 'ans' => 'Paddy'],
+                        ]
+                    ]
+                ]
+            ],
+            'Grade 9' => [
+                'Mathematics' => [
+                    [
+                        'title' => 'Number Systems',
+                        'desc' => 'Introduction to irrational numbers, real numbers, decimal expansions, and rationalizing the denominator.',
+                        'notes' => [
+                            ['title' => 'Real Numbers & Decimal Expansion', 'file' => 'real_numbers_decimal_expansion.pdf'],
+                            ['title' => 'Rationalization Practice Sheet', 'file' => 'rationalization_techniques.pdf'],
+                        ],
+                        'questions' => [
+                            ['q' => 'Every rational number is a:', 'a' => 'Natural number', 'b' => 'Whole number', 'c' => 'Real number', 'd' => 'Integer', 'opt' => 'c', 'ans' => 'Real number'],
+                        ]
+                    ]
+                ],
+                'Physics' => [
+                    [
+                        'title' => 'Motion',
+                        'desc' => 'Describing motion, speed with direction, rate of change of velocity, and equations of motion by graphical method.',
+                        'notes' => [
+                            ['title' => 'Equations of Motion: Graphical Method', 'file' => 'motion_equations_graphical.pdf'],
+                            ['title' => 'Speed, Velocity & Acceleration Guide', 'file' => 'speed_velocity_acceleration_guide.pdf'],
+                        ],
+                        'questions' => [
+                            ['q' => 'What is the SI unit of acceleration?', 'a' => 'm/s', 'b' => 'm/s^2', 'c' => 'km/h', 'd' => 'm', 'opt' => 'b', 'ans' => 'm/s^2'],
+                        ]
+                    ]
+                ]
+            ],
+            'Grade 10' => [
+                'Mathematics' => [
+                    [
+                        'title' => 'Real Numbers',
+                        'desc' => 'Euclid\'s division lemma, fundamental theorem of arithmetic, and irrational proofs.',
+                        'notes' => [
+                            ['title' => 'Concept Summary & Euclid\'s Lemma', 'file' => 'concept_real_numbers.pdf'],
+                            ['title' => 'Solved Examples & NCERT Exercises', 'file' => 'solved_real_numbers.pdf'],
+                        ],
+                        'questions' => [
+                            ['q' => 'Which of the following is an irrational number?', 'a' => 'sqrt(2)', 'b' => '2', 'c' => '0.5', 'd' => '2/3', 'opt' => 'a', 'ans' => 'sqrt(2)'],
+                            ['q' => 'What is the HCF of 24 and 36?', 'a' => '6', 'b' => '12', 'c' => '18', 'd' => '24', 'opt' => 'b', 'ans' => '12'],
+                        ]
+                    ],
+                    [
+                        'title' => 'Polynomials',
+                        'desc' => 'Geometrical meaning of zeroes, division algorithm, and relationships between coefficients.',
+                        'notes' => [
+                            ['title' => 'Polynomial Core Formulas & Rules', 'file' => 'poly_formulas.pdf'],
+                            ['title' => 'Division Algorithm Practice Worksheet', 'file' => 'poly_practice.pdf'],
+                        ],
+                        'questions' => [
+                            ['q' => 'What is the degree of a quadratic polynomial?', 'a' => '1', 'b' => '2', 'c' => '3', 'd' => '4', 'opt' => 'b', 'ans' => '2'],
+                        ]
+                    ],
+                    [
+                        'title' => 'Quadratic Equations',
+                        'desc' => 'Standard form, solutions by factorization and quadratic formula, nature of roots.',
+                        'notes' => [
+                            ['title' => 'Nature of Roots & Discriminant Guide', 'file' => 'quad_roots.pdf'],
+                            ['title' => 'Formula Sheet & Solved Problems', 'file' => 'quad_problems.pdf'],
+                        ],
+                        'questions' => [
+                            ['q' => 'If discriminant D > 0, the roots of quadratic equation are:', 'a' => 'Real and equal', 'b' => 'Real and unequal', 'c' => 'Imaginary', 'd' => 'No roots', 'opt' => 'b', 'ans' => 'Real and unequal'],
+                        ]
+                    ]
+                ],
+                'Physics' => [
+                    [
+                        'title' => 'Light - Reflection and Refraction',
+                        'desc' => 'Spherical mirrors, mirror formula, magnification, refraction, and refractive index.',
+                        'notes' => [
+                            ['title' => 'Ray Diagrams & Sign Conventions', 'file' => 'light_ray_diagrams.pdf'],
+                            ['title' => 'Lens Formula & Numerical Practice', 'file' => 'light_numericals.pdf'],
+                        ],
+                        'questions' => [
+                            ['q' => 'The focal length of a spherical mirror of radius of curvature 30 cm is:', 'a' => '10 cm', 'b' => '15 cm', 'c' => '30 cm', 'd' => '60 cm', 'opt' => 'b', 'ans' => '15 cm'],
+                        ]
+                    ]
+                ]
+            ],
+            'Grade 11' => [
+                'Chemistry' => [
+                    [
+                        'title' => 'Basic Concepts of Chemistry',
+                        'desc' => 'Scope of chemistry, laws of chemical combination, Dalton\'s atomic theory, atomic and molecular masses.',
+                        'notes' => [
+                            ['title' => 'Mole Concept & Molarity Calculations', 'file' => 'mole_concept_molarity.pdf'],
+                            ['title' => 'Empirical & Molecular Formula Guide', 'file' => 'empirical_molecular_formula.pdf'],
+                        ],
+                        'questions' => [
+                            ['q' => 'What is the molar mass of water (H2O)?', 'a' => '18 g/mol', 'b' => '16 g/mol', 'c' => '2 g/mol', 'd' => '20 g/mol', 'opt' => 'a', 'ans' => '18 g/mol'],
+                        ]
+                    ]
+                ]
+            ],
+            'Grade 12' => [
+                'Mathematics' => [
+                    [
+                        'title' => 'Matrices & Determinants',
+                        'desc' => 'Matrix operations, transpose, symmetric matrices, inverses, and Cramer\'s Rule.',
+                        'notes' => [
+                            ['title' => 'Properties of Determinants', 'file' => 'determinants_properties.pdf'],
+                            ['title' => 'Matrix Inversion & System Solutions', 'file' => 'matrix_inverse.pdf']
+                        ],
+                        'questions' => [
+                            ['q' => 'If A is a square matrix of order 3, and |A| = 5, what is |adj A|?', 'a' => '5', 'b' => '25', 'c' => '125', 'd' => '10', 'opt' => 'b', 'ans' => '25']
+                        ]
+                    ],
+                    [
+                        'title' => 'Calculus - Limits & Continuity',
+                        'desc' => 'Concepts of limits, continuity, differentiability, and standard derivatives.',
+                        'notes' => [
+                            ['title' => 'Standard Derivative Formula Reference', 'file' => 'calculus_formulas.pdf'],
+                            ['title' => 'Practice Sheet: Limits & Differentiability', 'file' => 'calculus_limits.pdf']
+                        ],
+                        'questions' => [
+                            ['q' => 'What is the derivative of sin(x²)?', 'a' => 'cos(x²)', 'b' => '2x * cos(x²)', 'c' => '2 * cos(x)', 'd' => '-cos(x²)', 'opt' => 'b', 'ans' => '2x * cos(x²)']
+                        ]
+                    ]
+                ],
+                'Physics' => [
+                    [
+                        'title' => 'Electrostatics',
+                        'desc' => 'Electric charges, Coulomb\'s law, electric fields, dipoles, and Gauss\'s theorem.',
+                        'notes' => [
+                            ['title' => 'Coulomb\'s Law & Field Lines Guide', 'file' => 'electrostatics_fields.pdf'],
+                            ['title' => 'Gauss\'s Theorem & Application Notes', 'file' => 'gauss_applications.pdf']
+                        ],
+                        'questions' => [
+                            ['q' => 'The electric field inside a perfectly conducting hollow sphere is:', 'a' => 'Infinite', 'b' => 'Zero', 'c' => 'Constant', 'd' => 'Depends on radius', 'opt' => 'b', 'ans' => 'Zero']
+                        ]
+                    ]
+                ]
+            ]
+        ];
 
-            $classModel = ClassModel::factory()->create([
-                'name' => "Grade " . $faker->numberBetween(8, 12),
-            ]);
+        // 7. Seed Classes, Subjects, Chapters, Notes, and Quiz Questions
+        $this->command->info('Creating Curriculum...');
+        $classes = [];
+        $subjectsMap = []; // Keep track of created subject models by name
+
+        foreach ($curriculum as $className => $subjectsData) {
+            // Create Class
+            $classModel = ClassModel::create(['name' => $className]);
             $classes[] = $classModel;
 
-            foreach ($subjects as $index => $subject) {
-                // Determine a faculty to assign for this subject
+            foreach ($subjectsData as $subjectName => $chaptersData) {
+                // Fetch or Create Subject
+                if (!isset($subjectsMap[$subjectName])) {
+                    $subjectsMap[$subjectName] = Subject::create(['name' => $subjectName]);
+                }
+                $subjectModel = $subjectsMap[$subjectName];
+
+                // Assign subject to class with schedule
                 $faculty = $faculties[array_rand($faculties)];
-                $classModel->subjects()->attach($subject->id, [
+                $classModel->subjects()->attach($subjectModel->id, [
                     'faculty_id' => $faculty->id,
-                    'class_link' => 'https://meet.google.com/xyz-fake-link-'.rand(100, 999),
-                    'class_date' => \Carbon\Carbon::today()->addDays(rand(1, 30))->format('Y-m-d'),
+                    'class_link' => 'https://meet.google.com/xyz-fake-link-' . rand(100, 999),
+                    'class_date' => \Carbon\Carbon::today()->addDays(rand(1, 15))->format('Y-m-d'),
                     'start_time' => '10:00:00',
                     'end_time'   => '12:00:00'
                 ]);
 
                 // Create Chapters
-                for ($ch = 1; $ch <= 3; $ch++) {
-                    $chapter = Chapter::factory()->create([
+                foreach ($chaptersData as $chIndex => $chData) {
+                    $chapterModel = Chapter::create([
                         'class_id' => $classModel->id,
-                        'subject_id' => $subject->id,
+                        'subject_id' => $subjectModel->id,
+                        'title' => $chData['title'],
+                        'description' => $chData['desc'],
+                        'display_order' => $chIndex + 1,
+                        'status' => 'active'
                     ]);
 
-                    // Question Bank for Chapter
-                    $this->createQuestions($chapter->id, null);
-
                     // Create Topic Notes
-                    for ($n = 1; $n <= 2; $n++) {
-                        $topicNote = TopicNote::factory()->create([
+                    foreach ($chData['notes'] as $nIndex => $nData) {
+                        $topicNoteModel = TopicNote::create([
                             'class_id' => $classModel->id,
-                            'subject_id' => $subject->id,
-                            'chapter_id' => $chapter->id,
+                            'subject_id' => $subjectModel->id,
+                            'chapter_id' => $chapterModel->id,
+                            'chapter' => $nData['title'],
+                            'file_url' => $nData['file']
                         ]);
 
-                        // Question Bank for Topic Note
-                        $this->createQuestions($chapter->id, $topicNote->id);
+                        // Seed Questions for the Topic Note
+                        foreach ($chData['questions'] as $qIndex => $qData) {
+                            QuizQuestion::create([
+                                'chapter_id' => $chapterModel->id,
+                                'topic_note_id' => $topicNoteModel->id,
+                                'question' => $qData['q'],
+                                'option_a' => $qData['a'],
+                                'option_b' => $qData['b'],
+                                'option_c' => $qData['c'],
+                                'option_d' => $qData['d'],
+                                'correct_option' => $qData['opt'],
+                                'correct_answer' => $qData['ans'],
+                                'difficulty_level' => $qIndex === 0 ? 'Easy' : 'Medium'
+                            ]);
+                        }
 
-                        // Progress for random students
-                        foreach(array_rand($students, 5) as $studentIdx) {
+                        // Generate Note Progress for random students
+                        foreach (array_rand($students, 5) as $studentIdx) {
                             StudentNoteProgress::create([
                                 'student_id' => $students[$studentIdx]->id,
-                                'topic_note_id' => $topicNote->id,
+                                'topic_note_id' => $topicNoteModel->id,
                                 'completed_at' => now(),
                             ]);
                         }
@@ -135,9 +352,10 @@ class DatabaseSeeder extends Seeder
             }
         }
 
+        // 8. Enroll Students
         $this->command->info('Enrolling Students...');
         foreach ($students as $student) {
-            $randomClasses = array_rand($classes, 3);
+            $randomClasses = array_rand($classes, 2);
             foreach ((array)$randomClasses as $classIdx) {
                 Enrollment::create([
                     'user_id' => $student->user_id,
@@ -148,21 +366,21 @@ class DatabaseSeeder extends Seeder
                 ]);
             }
         }
-        
+
+        // 9. Create Recordings (LMS Video lectures)
         $this->command->info('Creating Recordings...');
         $mockLectures = [
-            'Lecture 1: Introduction to Power Rules',
-            'Lecture 2: Base and Exponents Definition',
-            'Lecture 3: Multiplying Powers with Same Base',
-            'Lecture 4: Advanced Exponent Problems',
-            'Lecture 5: Class Practice Problems'
+            'Lecture 1: Core Definitions & Intro',
+            'Lecture 2: Formulas Derivation',
+            'Lecture 3: Exercise Problems & NCERT Solutions',
+            'Lecture 4: Advanced Concepts & Board Questions',
         ];
-        
+
         foreach ($classes as $class) {
             foreach ($mockLectures as $lectureTitle) {
                 Recording::create([
                     'class_id' => $class->id,
-                    'topic' => $lectureTitle,
+                    'topic' => $class->name . " - " . $lectureTitle,
                     'duration' => 60,
                     'video_link' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
                 ]);
@@ -170,44 +388,5 @@ class DatabaseSeeder extends Seeder
         }
 
         $this->command->info('Database Seeded Successfully!');
-    }
-
-    private function createQuestions($chapterId, $topicNoteId)
-    {
-        $mockQuestions = [
-            'How to find sin 30°?',
-            'What is the value of 2³ * 2⁴?',
-            'Calculate the derivative of x².',
-            'What is the formula for water?',
-            'Who developed the theory of relativity?',
-            'What is the speed of light?',
-            'Solve for x: 2x = 10',
-            'Define photosynthesis.',
-            'What is Avogadro\'s number?',
-            'State Newton\'s First Law.',
-            'What is the area of a circle with radius r?',
-            'Explain the Pythagorean theorem.',
-            'What is the powerhouse of the cell?',
-            'What is a prime number?',
-            'Solve: 5 + 3 * 2',
-            'What is the boiling point of water?',
-            'Define kinetic energy.',
-            'What is a covalent bond?',
-            'Explain the water cycle.',
-            'What is an exponent?'
-        ];
-
-        foreach ($mockQuestions as $index => $questionText) {
-            QuizQuestion::factory()->create([
-                'chapter_id' => $chapterId,
-                'topic_note_id' => $topicNoteId,
-                'question' => $questionText,
-                'difficulty_level' => match(true) {
-                    $index <= 5 => 'Easy',
-                    $index <= 12 => 'Medium',
-                    default => 'Hard'
-                }
-            ]);
-        }
     }
 }

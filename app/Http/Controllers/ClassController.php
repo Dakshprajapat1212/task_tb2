@@ -174,12 +174,25 @@ public function myClasses()
     ->get()
     ->pluck('class');
 
+    // Append teacher name for each subject's pivot data
+    foreach ($classes as $class) {
+        if ($class && $class->subjects) {
+            foreach ($class->subjects as $subject) {
+                if ($subject->pivot && $subject->pivot->faculty_id) {
+                    $faculty = \App\Models\Faculty::with('user')->find($subject->pivot->faculty_id);
+                    $subject->pivot->faculty_name = $faculty && $faculty->user ? $faculty->user->name : 'Expert Faculty';
+                } else {
+                    $subject->pivot->faculty_name = 'Expert Faculty';
+                }
+            }
+        }
+    }
+
     return response()->json([
         'success' => true,
         'message' => 'My classes fetched successfully',
         'data' => $classes
     ], 200);
-
 }
 public function facultyClasses()
 {

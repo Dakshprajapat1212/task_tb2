@@ -280,7 +280,13 @@ class LibraryController extends Controller
             ->latest()
             ->first();
 
-        if (!$attempt) return $this->notFound('Quiz result not found');
+        if (!$attempt) {
+            return response()->json([
+                'success' => true,
+                'message' => 'No quiz attempt found',
+                'data' => null
+            ], 200);
+        }
 
         return response()->json([
             'success' => true,
