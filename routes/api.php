@@ -160,6 +160,11 @@ Route::middleware(['auth.session.api'])->group(function () {
         Route::get('/library/modules/{note}/result', [LibraryController::class, 'moduleQuizResult']);
         Route::get('/library/modules/{note}/flashcards', [LibraryController::class, 'moduleFlashcards']);
 
+        // Doubts (Student)
+        Route::post('/doubts/search', [\App\Http\Controllers\DoubtController::class, 'search']);
+        Route::post('/doubts', [\App\Http\Controllers\DoubtController::class, 'store']);
+        Route::get('/library/my-doubts', [LibraryController::class, 'myDoubts']);
+
         // V2 New Business Terminology Routes
         Route::get('/v2/library/classes/{class}/subjects/{subject}/chapters', [LibraryController::class, 'v2Chapters']);
         Route::get('/v2/library/chapters/{chapter}/topic-notes', [LibraryController::class, 'v2TopicNotes']);
@@ -245,6 +250,14 @@ Route::middleware(['auth.session.api'])->group(function () {
 
         Route::get('/submit-homeworks',      [SubmitHomeworkController::class, 'index']);
         Route::put('/submit-homeworks/{id}', [SubmitHomeworkController::class, 'update']);
+
+        /*
+        |--------------------------------------------------------------------------
+        | DOUBTS (Faculty)
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/faculty/doubts', [\App\Http\Controllers\DoubtController::class, 'facultyIndex']);
+        Route::put('/faculty/doubts/{id}', [\App\Http\Controllers\DoubtController::class, 'facultyAnswer']);
     });
 
     /*
@@ -381,6 +394,14 @@ Route::middleware(['auth.session.api'])->group(function () {
         Route::get('/mas-roles/{id}',    [MasRoleController::class, 'show']);
         Route::put('/mas-roles/{id}',    [MasRoleController::class, 'update']);
         Route::delete('/mas-roles/{id}', [MasRoleController::class, 'destroy']);
+
+        /*
+        |--------------------------------------------------------------------------
+        | DOUBTS (Admin)
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/admin/doubts', [\App\Http\Controllers\DoubtController::class, 'adminIndex']);
+        Route::post('/admin/doubts/{id}/answer', [\App\Http\Controllers\DoubtController::class, 'adminAnswer']);
     });
 
     /*

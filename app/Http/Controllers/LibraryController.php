@@ -17,6 +17,7 @@ use App\Models\QuizQuestion;
 use App\Models\Student;
 use App\Models\StudentNoteProgress;
 use App\Models\Chapter;
+use App\Models\Doubt;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -378,7 +379,7 @@ class LibraryController extends Controller
         ], 200);
     }
 
-    public function v2TopicNotes(Topic $chapter)
+    public function v2TopicNotes(Chapter $chapter)
     {
         if (!$this->canAccessClass($chapter->class_id)) return $this->unauthorized();
 
@@ -391,7 +392,7 @@ class LibraryController extends Controller
         ], 200);
     }
 
-    public function v2ChapterQuestionBank(Topic $chapter)
+    public function v2ChapterQuestionBank(Chapter $chapter)
     {
         if (!$this->canAccessClass($chapter->class_id)) return $this->unauthorized();
 
@@ -501,5 +502,20 @@ class LibraryController extends Controller
             'success' => false,
             'message' => $message
         ], 404);
+    }
+
+    public function myDoubts(Request $request)
+    {
+        $query = Doubt::where('user_id', auth()->id())->with(['class', 'subject', 'chapter', 'answeredBy']);
+
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'My doubts fetched successfully',
+            'data' => $query->latest()->get()
+        ], 200);
     }
 }

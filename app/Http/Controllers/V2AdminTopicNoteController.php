@@ -66,7 +66,7 @@ class V2AdminTopicNoteController extends Controller
             'class_id' => $request->class_id,
             'subject_id' => $request->subject_id,
             'chapter_id' => $request->chapter_id,
-            'topic' => $request->title,
+            'chapter' => $request->title,
             'file_url' => $filePath
         ]);
 
@@ -116,11 +116,11 @@ class V2AdminTopicNoteController extends Controller
             if (!$newClass) return response()->json(['success' => false, 'message' => 'Unauthorized class assignment'], 403);
         }
 
-        $filePath = $topicNote->file_url;
+        $filePath = $note->file_url;
         if ($request->hasFile('file') || $request->filled('file_url')) {
             // Delete old file if it was stored locally
-            if ($topicNote->file_url && !filter_var($topicNote->file_url, FILTER_VALIDATE_URL)) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($topicNote->file_url);
+            if ($note->file_url && !filter_var($note->file_url, FILTER_VALIDATE_URL)) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($note->file_url);
             }
             
             if ($request->hasFile('file')) {
@@ -130,11 +130,11 @@ class V2AdminTopicNoteController extends Controller
             }
         }
 
-        $topicNote->update([
+        $note->update([
             'class_id' => $request->class_id,
             'subject_id' => $request->subject_id,
             'chapter_id' => $request->chapter_id,
-            'topic' => $request->title,
+            'chapter' => $request->title,
             'file_url' => $filePath
         ]);
 
@@ -151,11 +151,11 @@ class V2AdminTopicNoteController extends Controller
         if (!$note) return response()->json(['success' => false, 'message' => 'Topic Note not found'], 404);
         if (!$this->canAccessNote($note)) return response()->json(['success' => false, 'message' => 'Unauthorized access'], 403);
 
-        if ($topicNote->file_url && !filter_var($topicNote->file_url, FILTER_VALIDATE_URL)) {
-            \Illuminate\Support\Facades\Storage::disk('public')->delete($topicNote->file_url);
+        if ($note->file_url && !filter_var($note->file_url, FILTER_VALIDATE_URL)) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($note->file_url);
         }
 
-        $topicNote->delete();
+        $note->delete();
 
         return response()->json([
             'success' => true,
@@ -163,13 +163,13 @@ class V2AdminTopicNoteController extends Controller
         ], 200);
     }
 
-    private function canAccessNote(Note $note)
+    private function canAccessNote(TopicNote $note)
     {
         if (auth()->user()->role_id == 3) return true;
         if (auth()->user()->role_id == 2) {
             $faculty = Faculty::where('user_id', auth()->id())->first();
             if (!$faculty) return false;
-            return ClassModel::forFaculty($faculty->id)->where('id', $topicNote->class_id)->exists();
+            return ClassModel::forFaculty($faculty->id)->where('id', $note->class_id)->exists();
         }
         return false;
     }
