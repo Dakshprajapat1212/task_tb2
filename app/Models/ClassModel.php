@@ -24,7 +24,7 @@ class ClassModel extends Model
     public function subjects()
     {
         return $this->belongsToMany(Subject::class, 'class_subjects', 'class_id', 'subject_id')
-                    ->withPivot('faculty_id', 'class_link', 'class_date', 'start_time', 'end_time')
+                    ->withPivot('faculty_id', 'class_link', 'class_date', 'start_time', 'end_time', 'stream_url')
                     ->withTimestamps();
     }
 

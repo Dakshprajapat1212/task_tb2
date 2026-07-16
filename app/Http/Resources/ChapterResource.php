@@ -16,6 +16,7 @@ class ChapterResource extends JsonResource
             'description' => $this->description,
             'display_order' => $this->display_order,
             'status' => $this->status,
+            'topic_notes_count' => $this->topic_notes_count,
         ];
     }
 }

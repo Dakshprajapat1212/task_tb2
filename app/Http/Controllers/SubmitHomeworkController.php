@@ -49,7 +49,8 @@ class SubmitHomeworkController extends Controller
 
             $submissions = SubmitHomework::whereIn('assign_homework_id', $homeworkIds)
                 ->with([
-                    'assignHomework.class.subject',
+                    'assignHomework.subject',
+                    'assignHomework.class',
                     'student.user'
                 ])
                 ->get();
@@ -72,7 +73,8 @@ class SubmitHomeworkController extends Controller
 
         $submissions = SubmitHomework::where('student_id', $student->id)
             ->with([
-                'assignHomework.class.subject',
+                'assignHomework.subject',
+                'assignHomework.class',
                 'student.user'
             ])
             ->get();
@@ -101,7 +103,8 @@ class SubmitHomeworkController extends Controller
         $request->validate([
             'assign_homework_id' => 'required|exists:assign_homeworks,id',
             'file' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,txt,zip|max:10240',
-            'file_url' => 'nullable|url'
+            'file_url' => 'nullable|url',
+            'student_comment' => 'nullable|string|max:1000'
         ]);
 
         if (!$request->hasFile('file') && !$request->filled('file_url')) {
@@ -150,11 +153,13 @@ class SubmitHomeworkController extends Controller
             'student_id' => $student->id,
             'file' => $filePath,
             'status' => 'pending',
-            'remarks' => null
+            'remarks' => null,
+            'student_comment' => $request->student_comment
         ]);
 
         $submission->load([
-            'assignHomework.class.subject',
+            'assignHomework.subject',
+            'assignHomework.class',
             'student.user'
         ]);
 

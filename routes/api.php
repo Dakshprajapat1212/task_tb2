@@ -16,6 +16,7 @@ use App\Http\Controllers\AssignHomeworkController;
 use App\Http\Controllers\SubmitHomeworkController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\LibraryController;
+use App\Http\Controllers\HomeworkIssueController;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,8 +44,8 @@ Route::middleware(['auth.session.api'])->group(function () {
     |--------------------------------------------------------------------------
     */
 
-    Route::get('/me-test', function(IlluminateHttpRequest $request) { return response()->json(['auth_header' => $request->header('Authorization')]); }); Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/me', function(IlluminateHttpRequest $request) { return response()->json(['auth_header' => $request->header('Authorization')]); });
+    Route::get('/me-test', function(\Illuminate\Http\Request $request) { return response()->json(['auth_header' => $request->header('Authorization')]); }); Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/me', [AuthController::class, 'user']);
     Route::get('/enrollments/{id}', [EnrollmentController::class, 'show']);
 
     /*
@@ -62,6 +63,7 @@ Route::middleware(['auth.session.api'])->group(function () {
 
         Route::get('/my-enrollments',    [EnrollmentController::class, 'myEnrollments']);
         Route::post('/enrollments',      [EnrollmentController::class, 'store']);
+        Route::get('/available-classes', [ClassController::class, 'index']);
     });
 
     /*
@@ -128,6 +130,7 @@ Route::middleware(['auth.session.api'])->group(function () {
 
         Route::get('/submit-homeworks', [SubmitHomeworkController::class, 'index']);
         Route::post('/submit-homeworks',[SubmitHomeworkController::class, 'store']);
+        Route::post('/homework-issues', [HomeworkIssueController::class, 'store']);
 
         /*
         |--------------------------------------------------------------------------

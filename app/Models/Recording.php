@@ -12,29 +12,47 @@ class Recording extends Model
     protected $table = 'recordings';
 
     protected $fillable = [
-
         'class_id',
-
+        'subject_id',
+        'chapter_id',
         'topic',
-
         'duration',
+        'video_link',
+        'teacher_name',
+        'chapters'
+    ];
 
-        'video_link'
+    protected $casts = [
+        'chapters' => 'array'
     ];
 
     /*
     |--------------------------------------------------------------------------
-    | RECORDING BELONGS TO CLASS
+    | RECORDING BELONGS TO CLASS / SUBJECT / CHAPTER
     |--------------------------------------------------------------------------
     */
 
     public function class()
     {
         return $this->belongsTo(
-
             ClassModel::class,
-
             'class_id'
+        );
+    }
+
+    public function subject()
+    {
+        return $this->belongsTo(
+            Subject::class,
+            'subject_id'
+        );
+    }
+
+    public function chapter()
+    {
+        return $this->belongsTo(
+            Chapter::class,
+            'chapter_id'
         );
     }
 }

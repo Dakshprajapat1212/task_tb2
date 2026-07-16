@@ -24,16 +24,12 @@ class SubmitHomework extends Model
     */
 
     protected $fillable = [
-
         'assign_homework_id',
-
         'student_id',
-
         'file',
-
         'status',
-
-        'remarks'
+        'remarks',
+        'student_comment'
     ];
 
     /*
