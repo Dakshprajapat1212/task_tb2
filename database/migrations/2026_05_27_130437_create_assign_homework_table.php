@@ -41,7 +41,7 @@ return new class extends Migration
             |--------------------------------------------------------------------------
             */
 
-            $table->string('chapter');
+            $table->string('topic');
 
             $table->text('description')->nullable();
 

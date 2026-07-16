@@ -24,21 +24,19 @@ class AssignHomework extends Model
     */
 
     protected $fillable = [
-
         'class_id',
-
+        'subject_id',
         'topic',
-
         'description',
-
         'due_date',
-
-        'status'
+        'status',
+        'points',
+        'xp'
     ];
 
     /*
     |--------------------------------------------------------------------------
-    | RELATIONSHIP -> CLASS
+    | RELATIONSHIPS
     |--------------------------------------------------------------------------
     */
 
@@ -47,8 +45,18 @@ class AssignHomework extends Model
         return $this->belongsTo(ClassModel::class, 'class_id');
     }
 
+    public function subject()
+    {
+        return $this->belongsTo(Subject::class, 'subject_id');
+    }
+
     public function submissions()
     {
         return $this->hasMany(SubmitHomework::class, 'assign_homework_id');
+    }
+
+    public function issues()
+    {
+        return $this->hasMany(HomeworkIssue::class, 'assign_homework_id');
     }
 }

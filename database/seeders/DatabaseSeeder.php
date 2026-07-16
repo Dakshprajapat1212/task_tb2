@@ -15,6 +15,7 @@ use App\Models\Enrollment;
 use App\Models\Recording;
 use App\Models\StudentNoteProgress;
 use App\Models\QuizAttempt;
+use App\Models\AssignHomework;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Faker\Factory as Faker;
@@ -341,6 +342,31 @@ class DatabaseSeeder extends Seeder
                         'video_link' => '/chemistry_lecture.mp4',
                         'chapters' => null // No timeline chapters (hides tab)
                     ]);
+
+                    // Seed Homework assignments for this chapter
+                    if ($chIndex === 0) {
+                        AssignHomework::create([
+                            'class_id' => $classModel->id,
+                            'subject_id' => $subjectModel->id,
+                            'topic' => 'Practice Set 1: Basics of ' . $chapterModel->title,
+                            'description' => 'Complete all exercises in the chapter review for ' . $chapterModel->title . '. Show your step-by-step solutions clearly.',
+                            'due_date' => \Carbon\Carbon::today()->addDays(5)->format('Y-m-d'),
+                            'status' => 'active',
+                            'points' => 100,
+                            'xp' => 50
+                        ]);
+
+                        AssignHomework::create([
+                            'class_id' => $classModel->id,
+                            'subject_id' => $subjectModel->id,
+                            'topic' => 'Assigned Challenge: ' . $chapterModel->title,
+                            'description' => 'Solve the advanced problems of ' . $chapterModel->title . ' on page 34 of your reference book.',
+                            'due_date' => \Carbon\Carbon::today()->subDays(2)->format('Y-m-d'),
+                            'status' => 'active',
+                            'points' => 100,
+                            'xp' => 50
+                        ]);
+                    }
 
                     // Create Topic Notes
                     foreach ($chData['notes'] as $nIndex => $nData) {
