@@ -49,7 +49,8 @@ class SubmitHomeworkController extends Controller
 
             $submissions = SubmitHomework::whereIn('assign_homework_id', $homeworkIds)
                 ->with([
-                    'assignHomework.class.subject',
+                    'assignHomework.subject',
+                    'assignHomework.class',
                     'student.user'
                 ])
                 ->get();
@@ -72,7 +73,8 @@ class SubmitHomeworkController extends Controller
 
         $submissions = SubmitHomework::where('student_id', $student->id)
             ->with([
-                'assignHomework.class.subject',
+                'assignHomework.subject',
+                'assignHomework.class',
                 'student.user'
             ])
             ->get();
@@ -156,7 +158,8 @@ class SubmitHomeworkController extends Controller
         ]);
 
         $submission->load([
-            'assignHomework.class.subject',
+            'assignHomework.subject',
+            'assignHomework.class',
             'student.user'
         ]);
 
