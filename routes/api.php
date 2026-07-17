@@ -152,6 +152,7 @@ Route::middleware(['auth.session.api'])->group(function () {
         Route::get('/library/classes/{class}/subjects/{subject}/chapters', [LibraryController::class, 'chapters']);
         Route::get('/library/chapters/{chapter}/notes', [LibraryController::class, 'notes']);
         Route::get('/library/notes/{note}', [LibraryController::class, 'note']);
+        Route::get('/library/notes/{note}/download', [LibraryController::class, 'downloadNote']);
         Route::post('/library/notes/{note}/complete', [LibraryController::class, 'completeNote']);
         Route::get('/library/chapters/{chapter}/progress', [LibraryController::class, 'progress']);
         Route::get('/library/chapters/{chapter}/quiz', [LibraryController::class, 'quiz']);

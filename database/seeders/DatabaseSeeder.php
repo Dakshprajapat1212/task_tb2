@@ -375,7 +375,7 @@ class DatabaseSeeder extends Seeder
                             'subject_id' => $subjectModel->id,
                             'chapter_id' => $chapterModel->id,
                             'chapter' => $nData['title'],
-                            'file_url' => $nData['file']
+                            'file_url' => 'task_tutorials_dummy.pdf'
                         ]);
 
                         // Seed Questions for the Topic Note

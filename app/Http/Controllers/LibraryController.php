@@ -125,6 +125,26 @@ class LibraryController extends Controller
         ], 200);
     }
 
+    public function downloadNote(TopicNote $note)
+    {
+        if (!$this->canAccessClass($note->class_id)) {
+            return $this->unauthorized();
+        }
+
+        $path = storage_path('app/public/' . $note->file_url);
+
+        if (!file_exists($path)) {
+            return response()->json(['success' => false, 'message' => 'File not found'], 404);
+        }
+
+        return response()->download($path, $note->file_url, [
+            'Access-Control-Allow-Origin' => '*',
+            'Access-Control-Allow-Methods' => 'GET',
+            'Access-Control-Allow-Headers' => 'Content-Type, Authorization',
+            'Content-Disposition' => 'attachment; filename="' . $note->file_url . '"'
+        ]);
+    }
+
     public function completeNote(TopicNote $note)
     {
         if (!$this->canAccessClass($note->class_id)) {
