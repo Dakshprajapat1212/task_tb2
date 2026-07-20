@@ -16,6 +16,7 @@ use App\Models\Recording;
 use App\Models\StudentNoteProgress;
 use App\Models\QuizAttempt;
 use App\Models\AssignHomework;
+use App\Models\SubmitHomework;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Faker\Factory as Faker;
@@ -419,6 +420,27 @@ class DatabaseSeeder extends Seeder
                     'address' => $student->address,
                     'status' => 'approved'
                 ]);
+            }
+        }
+
+        $this->command->info('Seeding Demo Submissions...');
+        $allHomeworks = AssignHomework::all();
+        foreach ($allHomeworks as $hwIndex => $hw) {
+            $student = $students[0];
+            if ($hwIndex % 2 === 0) {
+                SubmitHomework::firstOrCreate(
+                    [
+                        'assign_homework_id' => $hw->id,
+                        'student_id' => $student->id,
+                    ],
+                    [
+                        'file' => 'task_tutorials_dummy.pdf',
+                        'graded_file' => 'task_tutorials_dummy.pdf',
+                        'status' => 'approved',
+                        'remarks' => 'Great problem-solving steps! Excellent work on step 3. 95/100.',
+                        'student_comment' => 'Completed all exercises from the chapter review.'
+                    ]
+                );
             }
         }
 

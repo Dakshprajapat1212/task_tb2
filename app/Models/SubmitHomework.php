@@ -27,6 +27,7 @@ class SubmitHomework extends Model
         'assign_homework_id',
         'student_id',
         'file',
+        'graded_file',
         'status',
         'remarks',
         'student_comment'

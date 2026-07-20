@@ -22,7 +22,8 @@ class SubmitHomeworkController extends Controller
         if (auth()->user()->role_id == 3) {
 
             $submissions = SubmitHomework::with([
-                'assignHomework.class.subject',
+                'assignHomework.subject',
+                'assignHomework.class',
                 'student.user'
             ])->get();
 
@@ -202,16 +203,27 @@ class SubmitHomeworkController extends Controller
 
         $request->validate([
             'status' => 'required|string|in:pending,approved,rejected',
-            'remarks' => 'nullable|string|max:1000'
+            'remarks' => 'nullable|string|max:1000',
+            'graded_file' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240',
+            'graded_file_url' => 'nullable|string'
         ]);
+
+        $gradedFilePath = $submission->graded_file;
+        if ($request->hasFile('graded_file')) {
+            $gradedFilePath = $request->file('graded_file')->store('graded-submissions', 'public');
+        } elseif ($request->filled('graded_file_url')) {
+            $gradedFilePath = $request->graded_file_url;
+        }
 
         $submission->update([
             'status' => $request->status,
-            'remarks' => $request->remarks
+            'remarks' => $request->remarks,
+            'graded_file' => $gradedFilePath
         ]);
 
         $submission->load([
-            'assignHomework.class.subject',
+            'assignHomework.subject',
+            'assignHomework.class',
             'student.user'
         ]);
 
