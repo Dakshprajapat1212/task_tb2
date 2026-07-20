@@ -42,6 +42,8 @@ class DatabaseSeeder extends Seeder
         Recording::truncate();
         StudentNoteProgress::truncate();
         QuizAttempt::truncate();
+        \App\Models\Event::truncate();
+        \App\Models\Announcement::truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         // 2. Create Roles
@@ -443,6 +445,13 @@ class DatabaseSeeder extends Seeder
                 );
             }
         }
+
+        // 9. Seed Events and Announcements
+        $this->command->info('Seeding Events and Announcements...');
+        $this->call([
+            EventSeeder::class,
+            AnnouncementSeeder::class,
+        ]);
 
         $this->command->info('Database Seeded Successfully!');
     }

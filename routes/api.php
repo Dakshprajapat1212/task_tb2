@@ -448,6 +448,15 @@ Route::middleware(['auth.session.api'])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
+    | EVENTS & ANNOUNCEMENTS
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/events', [\App\Http\Controllers\EventController::class, 'index']);
+    Route::get('/events/featured', [\App\Http\Controllers\EventController::class, 'featured']);
+    Route::get('/announcements', [\App\Http\Controllers\AnnouncementController::class, 'index']);
+
+    /*
+    |--------------------------------------------------------------------------
     | V2 SHARED ADMIN/TEACHER ROUTES (Enforced by controllers)
     |--------------------------------------------------------------------------
     */
