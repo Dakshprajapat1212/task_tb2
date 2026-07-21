@@ -86,10 +86,24 @@ class DatabaseSeeder extends Seeder
         // 5. Create Students
         $this->command->info('Creating Students...');
         $students = [];
-        for ($i = 1; $i <= 15; $i++) {
+        $studentNames = [
+            1 => 'Neeraj Verma',
+            2 => 'Aryan Sharma',
+            3 => 'Megha Patel',
+            4 => 'Suresh Rao',
+            5 => 'Tanvi Shah',
+            6 => 'Ananya Gupta',
+            7 => 'Rohan Singh',
+            8 => 'Kunal Mehta',
+            9 => 'Pooja Sharma',
+            10 => 'Vikram Gill'
+        ];
+
+        for ($i = 1; $i <= 10; $i++) {
+            $name = $studentNames[$i] ?? "Student {$i}";
             $user = User::create([
                 'role_id' => 1,
-                'name' => "Student {$i}",
+                'name' => $name,
                 'email' => "student{$i}@tasktutorials.com",
                 'password' => Hash::make('Password@123'),
                 'phone_no' => '77777777' . str_pad($i, 2, '0', STR_PAD_LEFT)
@@ -425,24 +439,41 @@ class DatabaseSeeder extends Seeder
             }
         }
 
-        $this->command->info('Seeding Demo Submissions...');
+        $this->command->info('Seeding Demo Submissions & Note Progress...');
         $allHomeworks = AssignHomework::all();
-        foreach ($allHomeworks as $hwIndex => $hw) {
-            $student = $students[0];
-            if ($hwIndex % 2 === 0) {
-                SubmitHomework::firstOrCreate(
-                    [
-                        'assign_homework_id' => $hw->id,
-                        'student_id' => $student->id,
-                    ],
-                    [
-                        'file' => 'task_tutorials_dummy.pdf',
-                        'graded_file' => 'task_tutorials_dummy.pdf',
-                        'status' => 'approved',
-                        'remarks' => 'Great problem-solving steps! Excellent work on step 3. 95/100.',
-                        'student_comment' => 'Completed all exercises from the chapter review.'
-                    ]
-                );
+        $allNotes = TopicNote::all();
+
+        foreach ($students as $sIdx => $st) {
+            // Seed note progress
+            $notesToComplete = min($allNotes->count(), ($sIdx + 1) * 2);
+            for ($n = 0; $n < $notesToComplete; $n++) {
+                if (isset($allNotes[$n])) {
+                    StudentNoteProgress::firstOrCreate([
+                        'student_id' => $st->id,
+                        'topic_note_id' => $allNotes[$n]->id,
+                    ], [
+                        'completed_at' => now()->subDays($n)
+                    ]);
+                }
+            }
+
+            // Seed submissions
+            foreach ($allHomeworks as $hwIndex => $hw) {
+                if (($sIdx + $hwIndex) % 2 === 0) {
+                    SubmitHomework::firstOrCreate(
+                        [
+                            'assign_homework_id' => $hw->id,
+                            'student_id' => $st->id,
+                        ],
+                        [
+                            'file' => 'task_tutorials_dummy.pdf',
+                            'graded_file' => 'task_tutorials_dummy.pdf',
+                            'status' => 'approved',
+                            'remarks' => 'Great problem-solving steps! Excellent work on step 3. 95/100.',
+                            'student_comment' => 'Completed all exercises from the chapter review.'
+                        ]
+                    );
+                }
             }
         }
 

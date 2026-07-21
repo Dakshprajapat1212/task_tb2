@@ -454,6 +454,7 @@ Route::middleware(['auth.session.api'])->group(function () {
     Route::get('/events', [\App\Http\Controllers\EventController::class, 'index']);
     Route::get('/events/featured', [\App\Http\Controllers\EventController::class, 'featured']);
     Route::get('/announcements', [\App\Http\Controllers\AnnouncementController::class, 'index']);
+    Route::get('/leaderboard', [\App\Http\Controllers\LeaderboardController::class, 'index']);
 
     /*
     |--------------------------------------------------------------------------
