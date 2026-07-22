@@ -64,6 +64,11 @@ Route::middleware(['auth.session.api'])->group(function () {
         Route::get('/my-enrollments',    [EnrollmentController::class, 'myEnrollments']);
         Route::post('/enrollments',      [EnrollmentController::class, 'store']);
         Route::get('/available-classes', [ClassController::class, 'index']);
+
+        // Student Profile API (Step 1)
+        Route::get('/student/profile', [StudentController::class, 'getProfile']);
+        Route::put('/student/profile', [StudentController::class, 'updateProfile']);
+        Route::post('/student/profile/avatar', [StudentController::class, 'uploadAvatar']);
     });
 
     /*
