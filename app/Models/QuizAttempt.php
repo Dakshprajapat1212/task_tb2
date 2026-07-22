@@ -22,6 +22,21 @@ class QuizAttempt extends Model
         'completed_at' => 'datetime'
     ];
 
+    /**
+     * Computed accessor: score as a percentage (0–100).
+     * Allows ->sum('score_percentage') and ->avg('score_percentage')
+     * to work correctly on Eloquent collections.
+     *
+     * Example: score=3, total_questions=5 → score_percentage = 60.0
+     */
+    public function getScorePercentageAttribute(): float
+    {
+        if (!$this->total_questions || $this->total_questions == 0) {
+            return 0.0;
+        }
+        return round(($this->score / $this->total_questions) * 100, 2);
+    }
+
     public function student()
     {
         return $this->belongsTo(Student::class, 'student_id');
