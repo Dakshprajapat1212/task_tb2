@@ -7,6 +7,7 @@ use App\Models\StudentNoteProgress;
 use App\Models\SubmitHomework;
 use App\Models\QuizAttempt;
 use App\Models\Enrollment;
+use App\Models\LiveAttendance;
 use Illuminate\Http\Request;
 
 class LeaderboardController extends Controller
@@ -61,11 +62,22 @@ class LeaderboardController extends Controller
                 ? round(($quizScoreSum + $assignmentsPoints) / max(1, $totalEvaluated), 1)
                 : 85.0;
 
-            // Compute per-student attendance (approximate until Phase 4 real tracking)
-            $totalRecordingsCount  = \App\Models\Recording::count();
-            $totalClassesForPct   = max(1, $totalRecordingsCount > 0 ? $totalRecordingsCount : 16);
-            $classesAttendedCount = max(12, min($totalClassesForPct, 14));
-            $studentAttendancePct = round(($classesAttendedCount / $totalClassesForPct) * 100);
+            // Phase 4: Real dynamic student attendance calculation
+            $studentClassIds = Enrollment::where('user_id', $student->user_id)
+                ->where('status', 'approved')
+                ->pluck('class_id');
+
+            $totalRecordingsCount = \App\Models\Recording::whereIn('class_id', $studentClassIds)->count();
+
+            if ($totalRecordingsCount == 0) {
+                $studentAttendancePct = 95; // Default high baseline if no recordings exist yet
+            } else {
+                $attendedCount = LiveAttendance::where('student_id', $student->id)
+                    ->whereIn('class_id', $studentClassIds)
+                    ->whereNotNull('completed_at')
+                    ->count();
+                $studentAttendancePct = min(100, round(($attendedCount / $totalRecordingsCount) * 100));
+            }
 
             $badges = [];
             if ($notesCompleted >= 1) {
@@ -161,9 +173,22 @@ class LeaderboardController extends Controller
         $userQuizAvg = $userQuizCount > 0 ? round($userQuizAttempts->avg('score_percentage'), 1) : 92.0;
 
         $studyHours = round(($userNotesCount * 0.5) + ($userQuizCount * 0.3) + ($userSubmissionsCount * 0.8) + 8.5, 1);
-        $totalRecordings = \App\Models\Recording::count();
-        $classesAttended = max(12, min($totalRecordings > 0 ? $totalRecordings : 16, 14));
-        $totalClasses = max(16, $totalRecordings);
+
+        // Phase 4: Real user attendance stats
+        $userClassIds = Enrollment::where('user_id', $currentUser->id)
+            ->where('status', 'approved')
+            ->pluck('class_id');
+
+        $totalClasses = \App\Models\Recording::whereIn('class_id', $userClassIds)->count();
+        $classesAttended = LiveAttendance::where('student_id', $currentStudentId)
+            ->whereIn('class_id', $userClassIds)
+            ->whereNotNull('completed_at')
+            ->count();
+
+        if ($totalClasses == 0) {
+            $totalClasses = 16;
+            $classesAttended = 15;
+        }
         $attendancePct = round(($classesAttended / max(1, $totalClasses)) * 100);
 
         $performanceOverview = [

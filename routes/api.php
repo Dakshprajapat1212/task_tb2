@@ -139,6 +139,15 @@ Route::middleware(['auth.session.api'])->group(function () {
 
         /*
         |--------------------------------------------------------------------------
+        | LIVE ATTENDANCE (Student)
+        |--------------------------------------------------------------------------
+        */
+
+        Route::post('/student/live-attendance/join',     [\App\Http\Controllers\LiveAttendanceController::class, 'join']);
+        Route::post('/student/live-attendance/complete', [\App\Http\Controllers\LiveAttendanceController::class, 'complete']);
+
+        /*
+        |--------------------------------------------------------------------------
         | SUBJECTS (Student)
         |--------------------------------------------------------------------------
         */
