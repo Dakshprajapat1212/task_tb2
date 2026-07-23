@@ -155,13 +155,19 @@ class LibraryController extends Controller
 
         $progress = StudentNoteProgress::updateOrCreate(
             [
-                'student_id' => $student->id,
+                'student_id'    => $student->id,
                 'topic_note_id' => $note->id,
             ],
             [
                 'completed_at' => now(),
             ]
         );
+
+        // Award +20 XP only the FIRST time this note is completed
+        // wasRecentlyCreated = true on INSERT, false on UPDATE (re-completion)
+        if ($progress->wasRecentlyCreated) {
+            $student->increment('xp', 20);
+        }
 
         $topicProgress = $note->chapter_id
             ? $this->topicProgressData(Chapter::find($note->chapter_id), $student)
@@ -171,8 +177,9 @@ class LibraryController extends Controller
             'success' => true,
             'message' => 'Note marked as completed',
             'data' => [
-                'progress' => $progress,
-                'topic_progress' => $topicProgress
+                'progress'       => $progress,
+                'topic_progress' => $topicProgress,
+                'xp_awarded'     => $progress->wasRecentlyCreated ? 20 : 0,
             ]
         ], 200);
     }
@@ -275,6 +282,9 @@ class LibraryController extends Controller
             $attempt->update(['score' => $score]);
             return $attempt;
         });
+
+        // Award +30 XP for completing this quiz attempt
+        $this->student()->increment('xp', 30);
 
         $attempt->load('answers.question');
         return response()->json(['success' => true, 'message' => 'Quiz submitted successfully', 'data' => $this->attemptResult($attempt)], 201);

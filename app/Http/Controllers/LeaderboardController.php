@@ -36,39 +36,31 @@ class LeaderboardController extends Controller
         foreach ($students as $student) {
             $userName = $student->user ? $student->user->name : 'Student #' . $student->id;
 
-            // 1. Calculate XP Breakdown
+            // Phase 2: Read XP directly from students.xp (stored, not recalculated)
+            $totalXp = $student->xp;
+
+            // Still needed for avgMark and badge thresholds:
             $notesCompleted = StudentNoteProgress::where('student_id', $student->id)->count();
-            $lecturesXp = $notesCompleted * 20;
 
             $approvedSubmissions = SubmitHomework::where('student_id', $student->id)
                 ->where('status', 'approved')
                 ->with('assignHomework')
                 ->get();
-            
-            $assignmentsXp = 0;
-            $assignmentsPoints = 0;
-            foreach ($approvedSubmissions as $sub) {
-                $assignmentsXp += $sub->assignHomework ? ($sub->assignHomework->xp ?? 50) : 50;
-                $assignmentsPoints += 90;
-            }
+
+            $assignmentsPoints = $approvedSubmissions->count() * 90;
 
             $quizAttempts = QuizAttempt::where('student_id', $student->id)->get();
-            $quizzesXp = $quizAttempts->count() * 30;
-            // Bug Fix #1: score_percentage now works via model accessor (score/total_questions*100)
             $quizScoreSum = $quizAttempts->sum('score_percentage');
             $totalQuizzes = $quizAttempts->count();
 
             $streakDays = max(3, ($notesCompleted * 2) + $approvedSubmissions->count());
-            $streakBonus = min(200, $streakDays * 5);
-
-            $totalXp = $lecturesXp + $assignmentsXp + $quizzesXp + $streakBonus;
 
             $totalEvaluated = $totalQuizzes + $approvedSubmissions->count();
             $avgMark = $totalEvaluated > 0
                 ? round(($quizScoreSum + $assignmentsPoints) / max(1, $totalEvaluated), 1)
                 : 85.0;
 
-            // Bug Fix #3: Compute per-student attendance (approximate until Phase 4 real tracking)
+            // Compute per-student attendance (approximate until Phase 4 real tracking)
             $totalRecordingsCount  = \App\Models\Recording::count();
             $totalClassesForPct   = max(1, $totalRecordingsCount > 0 ? $totalRecordingsCount : 16);
             $classesAttendedCount = max(12, min($totalClassesForPct, 14));
@@ -92,18 +84,16 @@ class LeaderboardController extends Controller
             $isCurrentUser = $studentProfile && ($student->id === $studentProfile->id);
 
             $xpRankings[] = [
-                'id' => $student->id,
-                'name' => $userName,
-                'xp' => $totalXp,
-                'streak' => $streakDays,
-                'attendance' => $studentAttendancePct, // Bug Fix #3: was hardcoded 92
-                'avatar' => null,
+                'id'            => $student->id,
+                'name'          => $userName,
+                'xp'            => $totalXp,
+                'streak'        => $streakDays,
+                'attendance'    => $studentAttendancePct,
+                'avatar'        => null,
                 'isCurrentUser' => $isCurrentUser,
-                'xpBreakdown' => [
-                    'lectures' => $lecturesXp,
-                    'assignments' => $assignmentsXp,
-                    'quizzes' => $quizzesXp,
-                    'streakBonus' => $streakBonus
+                'xpBreakdown'   => [
+                    'total' => $totalXp,
+                    'note'  => 'XP is stored and awarded in real-time (Phase 2)',
                 ],
                 'badges' => array_values(array_unique($badges))
             ];

@@ -215,11 +215,20 @@ class SubmitHomeworkController extends Controller
             $gradedFilePath = $request->graded_file_url;
         }
 
+        // Capture status BEFORE the update to detect the approved transition
+        $previousStatus = $submission->status;
+
         $submission->update([
-            'status' => $request->status,
-            'remarks' => $request->remarks,
+            'status'      => $request->status,
+            'remarks'     => $request->remarks,
             'graded_file' => $gradedFilePath
         ]);
+
+        // Award XP only on the FIRST transition to 'approved' — prevents double-awarding
+        if ($request->status === 'approved' && $previousStatus !== 'approved') {
+            $xpToAward = $submission->assignHomework->xp ?? 50;
+            $submission->student->increment('xp', $xpToAward);
+        }
 
         $submission->load([
             'assignHomework.subject',
@@ -230,7 +239,7 @@ class SubmitHomeworkController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Homework submission reviewed successfully',
-            'data' => $submission
+            'data'    => $submission
         ], 200);
     }
 
