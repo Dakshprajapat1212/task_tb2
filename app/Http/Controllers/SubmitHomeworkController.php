@@ -8,6 +8,7 @@ use App\Models\Enrollment;
 use App\Models\Faculty;
 use App\Models\Student;
 use App\Models\SubmitHomework;
+use App\Services\StudentStreakService;
 use Illuminate\Http\Request;
 
 class SubmitHomeworkController extends Controller
@@ -151,12 +152,15 @@ class SubmitHomeworkController extends Controller
 
         $submission = SubmitHomework::create([
             'assign_homework_id' => $homework->id,
-            'student_id' => $student->id,
-            'file' => $filePath,
-            'status' => 'pending',
-            'remarks' => null,
-            'student_comment' => $request->student_comment
+            'student_id'         => $student->id,
+            'file'               => $filePath,
+            'status'             => 'pending',
+            'remarks'            => null,
+            'student_comment'    => $request->student_comment
         ]);
+
+        // Update streak — submitting homework counts as study activity
+        (new StudentStreakService())->updateStreak($student);
 
         $submission->load([
             'assignHomework.subject',
@@ -167,7 +171,7 @@ class SubmitHomeworkController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Homework submitted successfully',
-            'data' => $submission
+            'data'    => $submission
         ], 201);
     }
 

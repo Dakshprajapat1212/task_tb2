@@ -53,7 +53,8 @@ class LeaderboardController extends Controller
             $quizScoreSum = $quizAttempts->sum('score_percentage');
             $totalQuizzes = $quizAttempts->count();
 
-            $streakDays = max(3, ($notesCompleted * 2) + $approvedSubmissions->count());
+            // Phase 3: Read real streak directly from students.streak_days (stored calendar days)
+            $streakDays = $student->streak_days;
 
             $totalEvaluated = $totalQuizzes + $approvedSubmissions->count();
             $avgMark = $totalEvaluated > 0
@@ -177,7 +178,8 @@ class LeaderboardController extends Controller
             'notes_read_trend' => '+10 from last week'
         ];
 
-        $userStreak = max(5, ($userNotesCount * 2) + $userSubmissionsCount);
+        // Phase 3: Read real streak for the current user (stored calendar days)
+        $userStreak = $studentProfile ? $studentProfile->streak_days : 0;
 
         $achievements = [
             [

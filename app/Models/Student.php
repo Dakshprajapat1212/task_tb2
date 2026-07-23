@@ -26,6 +26,8 @@ class Student extends Model
     protected $fillable = [
         'user_id',
         'xp',
+        'streak_days',
+        'last_activity_date',
         'dob',
         'address',
         'full_name',
@@ -42,6 +44,13 @@ class Student extends Model
         'mother_name',
         'parent_mobile',
         'marksheet'
+    ];
+
+    /**
+     * Cast last_activity_date to a Carbon date instance so ->toDateString() works cleanly.
+     */
+    protected $casts = [
+        'last_activity_date' => 'date',
     ];
 
     /*
