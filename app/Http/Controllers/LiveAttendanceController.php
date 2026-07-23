@@ -88,6 +88,9 @@ class LiveAttendanceController extends Controller
             // Trigger Streak increment as this counts as study activity
             $streakService = new StudentStreakService();
             $streakService->updateStreak($student);
+
+            // Evaluate and award any eligible badges
+            (new \App\Services\BadgeService())->checkAndAwardBadges($student);
         }
 
         return response()->json([

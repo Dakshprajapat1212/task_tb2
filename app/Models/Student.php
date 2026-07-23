@@ -84,4 +84,9 @@ class Student extends Model
     {
         return $this->hasMany(QuizAttempt::class, 'student_id');
     }
+
+    public function badges()
+    {
+        return $this->hasMany(StudentBadge::class, 'student_id');
+    }
 }

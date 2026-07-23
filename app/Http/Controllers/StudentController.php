@@ -365,4 +365,31 @@ class StudentController extends Controller
             ], 500);
         }
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | GET STUDENT BADGES
+    |--------------------------------------------------------------------------
+    */
+    public function getBadges()
+    {
+        $student = Student::where('user_id', auth()->id())->first();
+
+        if (!$student) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Student profile not found'
+            ], 404);
+        }
+
+        $badges = \App\Models\StudentBadge::where('student_id', $student->id)
+            ->latest('unlocked_at')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Student badges fetched successfully',
+            'data' => $badges
+        ], 200);
+    }
 }

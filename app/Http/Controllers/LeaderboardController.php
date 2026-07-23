@@ -79,20 +79,8 @@ class LeaderboardController extends Controller
                 $studentAttendancePct = min(100, round(($attendedCount / $totalRecordingsCount) * 100));
             }
 
-            $badges = [];
-            if ($notesCompleted >= 1) {
-                $badges[] = 'Notes Master';
-            }
-            if ($streakDays >= 5) {
-                $badges[] = 'Consistency King';
-            }
-            if ($avgMark >= 88) {
-                $badges[] = 'Quiz Genius';
-            }
-            // Bug Fix #2: Gate Attendance Hero — was unconditional, now requires >= 85% attendance
-            if ($studentAttendancePct >= 85) {
-                $badges[] = 'Attendance Hero';
-            }
+            // Phase 5: Fetch persisted badges directly from student_badges table
+            $badges = \App\Models\StudentBadge::where('student_id', $student->id)->pluck('title')->toArray();
 
             $isCurrentUser = $studentProfile && ($student->id === $studentProfile->id);
 

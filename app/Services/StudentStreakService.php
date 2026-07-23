@@ -52,6 +52,9 @@ class StudentStreakService
             $student->increment('xp', $bonusXp);
         }
 
+        // Evaluate and award any eligible badges (e.g. Consistency King)
+        (new BadgeService())->checkAndAwardBadges($student);
+
         return $bonusXp;
     }
 }

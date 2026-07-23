@@ -19,6 +19,7 @@ use App\Models\StudentNoteProgress;
 use App\Models\Chapter;
 use App\Models\Doubt;
 use App\Services\StudentStreakService;
+use App\Services\BadgeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -173,6 +174,9 @@ class LibraryController extends Controller
         // Update streak — any note interaction (even re-completion) counts as study activity
         (new StudentStreakService())->updateStreak($student);
 
+        // Evaluate and award any eligible badges
+        (new BadgeService())->checkAndAwardBadges($student);
+
         $topicProgress = $note->chapter_id
             ? $this->topicProgressData(Chapter::find($note->chapter_id), $student)
             : null;
@@ -292,6 +296,9 @@ class LibraryController extends Controller
 
         // Update streak — taking a quiz counts as study activity
         (new StudentStreakService())->updateStreak($this->student());
+
+        // Evaluate and award any eligible badges
+        (new BadgeService())->checkAndAwardBadges($this->student());
 
         $attempt->load('answers.question');
         return response()->json(['success' => true, 'message' => 'Quiz submitted successfully', 'data' => $this->attemptResult($attempt)], 201);

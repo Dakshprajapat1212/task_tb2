@@ -232,6 +232,7 @@ class SubmitHomeworkController extends Controller
         if ($request->status === 'approved' && $previousStatus !== 'approved') {
             $xpToAward = $submission->assignHomework->xp ?? 50;
             $submission->student->increment('xp', $xpToAward);
+            (new \App\Services\BadgeService())->checkAndAwardBadges($submission->student);
         }
 
         $submission->load([
