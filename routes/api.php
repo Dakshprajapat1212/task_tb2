@@ -71,6 +71,7 @@ Route::middleware(['auth.session.api'])->group(function () {
         Route::post('/student/profile/avatar', [StudentController::class, 'uploadAvatar']);
         Route::get('/student/badges', [StudentController::class, 'getBadges']);
         Route::get('/student/achievements', [StudentController::class, 'getAchievements']);
+        Route::get('/student/xp-history', [StudentController::class, 'getXpHistory']);
     });
 
     /*

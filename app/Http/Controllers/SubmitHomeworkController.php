@@ -231,7 +231,7 @@ class SubmitHomeworkController extends Controller
         // Award XP only on the FIRST transition to 'approved' — prevents double-awarding
         if ($request->status === 'approved' && $previousStatus !== 'approved') {
             $xpToAward = $submission->assignHomework->xp ?? 50;
-            $submission->student->increment('xp', $xpToAward);
+            (new \App\Services\XpService())->awardXp($submission->student, $xpToAward, 'homework', 'Approved homework submission', $submission->id);
             (new \App\Services\BadgeService())->checkAndAwardBadges($submission->student);
         }
 

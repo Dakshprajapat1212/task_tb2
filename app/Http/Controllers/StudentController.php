@@ -395,6 +395,33 @@ class StudentController extends Controller
 
     /*
     |--------------------------------------------------------------------------
+    | GET STUDENT XP HISTORY LOGS
+    |--------------------------------------------------------------------------
+    */
+    public function getXpHistory(Request $request)
+    {
+        $student = Student::where('user_id', auth()->id())->first();
+
+        if (!$student) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Student profile not found'
+            ], 404);
+        }
+
+        $logs = \App\Models\XpLog::where('student_id', $student->id)
+            ->latest()
+            ->paginate($request->get('per_page', 20));
+
+        return response()->json([
+            'success' => true,
+            'message' => 'XP history logs fetched successfully',
+            'data' => $logs
+        ], 200);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
     | GET DYNAMIC ACHIEVEMENTS CATALOG
     |--------------------------------------------------------------------------
     */

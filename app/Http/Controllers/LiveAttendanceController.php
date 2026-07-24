@@ -81,8 +81,8 @@ class LiveAttendanceController extends Controller
             $attendance->duration_seconds = 30;
             $attendance->save();
 
-            // Award +20 XP
-            $student->increment('xp', 20);
+            // Award +20 XP with itemized audit log
+            (new \App\Services\XpService())->awardXp($student, 20, 'live_class', 'Attended live class session', $attendance->id);
             $xpAwarded = 20;
 
             // Trigger Streak increment as this counts as study activity

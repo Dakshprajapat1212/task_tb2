@@ -89,4 +89,9 @@ class Student extends Model
     {
         return $this->hasMany(StudentBadge::class, 'student_id');
     }
+
+    public function xpLogs()
+    {
+        return $this->hasMany(XpLog::class, 'student_id');
+    }
 }

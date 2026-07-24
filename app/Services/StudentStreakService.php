@@ -49,7 +49,7 @@ class StudentStreakService
 
         if (in_array($currentStreak, [7, 14, 30])) {
             $bonusXp = 50;
-            $student->increment('xp', $bonusXp);
+            (new XpService())->awardXp($student, $bonusXp, 'streak', "Achieved {$currentStreak}-day streak milestone!");
         }
 
         // Evaluate and award any eligible badges (e.g. Consistency King)

@@ -20,6 +20,7 @@ use App\Models\Chapter;
 use App\Models\Doubt;
 use App\Services\StudentStreakService;
 use App\Services\BadgeService;
+use App\Services\XpService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -168,7 +169,7 @@ class LibraryController extends Controller
         // Award +20 XP only the FIRST time this note is completed
         // wasRecentlyCreated = true on INSERT, false on UPDATE (re-completion)
         if ($progress->wasRecentlyCreated) {
-            $student->increment('xp', 20);
+            (new XpService())->awardXp($student, 20, 'note', 'Completed study note: ' . ($note->title ?? 'Note'), $note->id);
         }
 
         // Update streak — any note interaction (even re-completion) counts as study activity
@@ -292,7 +293,7 @@ class LibraryController extends Controller
         });
 
         // Award +30 XP for completing this quiz attempt
-        $this->student()->increment('xp', 30);
+        (new XpService())->awardXp($this->student(), 30, 'quiz', 'Completed quiz assessment', $attempt->id);
 
         // Update streak — taking a quiz counts as study activity
         (new StudentStreakService())->updateStreak($this->student());
