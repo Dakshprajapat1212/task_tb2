@@ -392,4 +392,154 @@ class StudentController extends Controller
             'data' => $badges
         ], 200);
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | GET DYNAMIC ACHIEVEMENTS CATALOG
+    |--------------------------------------------------------------------------
+    */
+    public function getAchievements()
+    {
+        $user = auth()->user();
+        $student = Student::where('user_id', $user->id)->first();
+
+        if (!$student) {
+            return response()->json(['success' => false, 'message' => 'Student not found'], 404);
+        }
+
+        $unlockedBadges = \App\Models\StudentBadge::where('student_id', $student->id)
+            ->get()
+            ->keyBy('badge_id');
+
+        $userNotesCount = \App\Models\StudentNoteProgress::where('student_id', $student->id)->count();
+        $userSubmissionsCount = \App\Models\SubmitHomework::where('student_id', $student->id)->where('status', 'approved')->count();
+        $userQuizAttempts = \App\Models\QuizAttempt::where('student_id', $student->id)->get();
+        $userQuizCount = $userQuizAttempts->count();
+        $userQuizAvg = $userQuizCount > 0 ? round($userQuizAttempts->avg('score_percentage'), 1) : 0;
+        $userStreak = $student->streak_days;
+
+        $userClassIds = \App\Models\Enrollment::where('user_id', $user->id)->where('status', 'approved')->pluck('class_id');
+        $totalRecordings = \App\Models\Recording::whereIn('class_id', $userClassIds)->count();
+        $attendedCount = \App\Models\LiveAttendance::where('student_id', $student->id)->whereIn('class_id', $userClassIds)->whereNotNull('completed_at')->count();
+        $attendancePct = $totalRecordings > 0 ? min(100, round(($attendedCount / $totalRecordings) * 100)) : 95;
+
+        $activity = [
+            [
+                'id' => 'consistency-king',
+                'title' => 'Consistency King',
+                'requirement' => 'Maintain a 5-day streak',
+                'desc' => 'Studied consistently for 5 consecutive days.',
+                'progress' => min(100, round(($userStreak / 5) * 100)),
+                'unlocked' => $unlockedBadges->has('consistency-king'),
+                'unlocked_at' => $unlockedBadges->get('consistency-king')?->unlocked_at,
+                'icon' => '👑',
+                'tag' => $userStreak . ' / 5 Days',
+                'color' => '#FFA500',
+                'tips' => 'Log in and complete at least one study activity every day.'
+            ],
+            [
+                'id' => 'notes-master',
+                'title' => 'Notes Master',
+                'requirement' => 'Read at least 1 study note',
+                'desc' => 'Actively explored library study materials.',
+                'progress' => min(100, round(($userNotesCount / 1) * 100)),
+                'unlocked' => $unlockedBadges->has('notes-master'),
+                'unlocked_at' => $unlockedBadges->get('notes-master')?->unlocked_at,
+                'icon' => '📖',
+                'tag' => $userNotesCount . ' Notes Read',
+                'color' => '#8b5cf6',
+                'tips' => 'Visit the Library and click Mark as Complete on notes.'
+            ],
+            [
+                'id' => 'attendance-hero',
+                'title' => 'Attendance Hero',
+                'requirement' => 'Maintain 85%+ lecture attendance',
+                'desc' => 'Remained active in real-time interactive lectures.',
+                'progress' => min(100, $attendancePct),
+                'unlocked' => $unlockedBadges->has('attendance-hero'),
+                'unlocked_at' => $unlockedBadges->get('attendance-hero')?->unlocked_at,
+                'icon' => '🔥',
+                'tag' => $attendancePct . '% Attendance',
+                'color' => '#10b981',
+                'tips' => 'Join live classes regularly and watch for at least 30 seconds.'
+            ],
+            [
+                'id' => 'qa-contributor',
+                'title' => 'Q&A Contributor',
+                'requirement' => 'Post 10 accepted answers',
+                'desc' => 'Help peer students by solving doubts.',
+                'progress' => 0,
+                'unlocked' => false,
+                'unlocked_at' => null,
+                'icon' => '💬',
+                'tag' => '0 / 10 Completed',
+                'color' => '#06b6d4',
+                'tips' => 'Answer questions in class Q&A forums.'
+            ],
+            [
+                'id' => 'night-owl',
+                'title' => 'Night Owl',
+                'requirement' => 'Study between 10PM and 2AM',
+                'desc' => 'Log late night study hours.',
+                'progress' => 0,
+                'unlocked' => false,
+                'unlocked_at' => null,
+                'icon' => '🦉',
+                'tag' => '0 / 10 Hours',
+                'color' => '#3b82f6',
+                'tips' => 'Study notes or watch lectures late at night.'
+            ]
+        ];
+
+        $academic = [
+            [
+                'id' => 'quiz-genius',
+                'title' => 'Quiz Genius',
+                'requirement' => 'Maintain 88%+ average score in quizzes',
+                'desc' => 'Achieved high accuracy on weekly quiz assessments.',
+                'progress' => min(100, round(($userQuizAvg / 88) * 100)),
+                'unlocked' => $unlockedBadges->has('quiz-genius'),
+                'unlocked_at' => $unlockedBadges->get('quiz-genius')?->unlocked_at,
+                'icon' => '🎯',
+                'tag' => $userQuizAvg . '% Avg Score',
+                'color' => '#ef4444',
+                'tips' => 'Review notes before attempting quizzes.'
+            ],
+            [
+                'id' => 'react-guru',
+                'title' => 'React Guru',
+                'requirement' => 'Score 100% in React challenge',
+                'desc' => 'Scored flawless accuracy in React assessment.',
+                'progress' => 0,
+                'unlocked' => false,
+                'unlocked_at' => null,
+                'icon' => '⚛️',
+                'tag' => 'Challenge Lock',
+                'color' => '#00d8ff',
+                'tips' => 'Master components and state management.'
+            ],
+            [
+                'id' => 'logic-master',
+                'title' => 'Logic Master',
+                'requirement' => 'Pass 5 approved assignments',
+                'desc' => 'Submitted 5 approved homework assignments.',
+                'progress' => min(100, round(($userSubmissionsCount / 5) * 100)),
+                'unlocked' => $userSubmissionsCount >= 5,
+                'unlocked_at' => null,
+                'icon' => '📐',
+                'tag' => $userSubmissionsCount . ' / 5 Approved',
+                'color' => '#3b82f6',
+                'tips' => 'Submit homework assignments on time.'
+            ]
+        ];
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Achievements fetched successfully',
+            'data' => [
+                'activity' => $activity,
+                'academic' => $academic
+            ]
+        ], 200);
+    }
 }

@@ -70,6 +70,7 @@ Route::middleware(['auth.session.api'])->group(function () {
         Route::put('/student/profile', [StudentController::class, 'updateProfile']);
         Route::post('/student/profile/avatar', [StudentController::class, 'uploadAvatar']);
         Route::get('/student/badges', [StudentController::class, 'getBadges']);
+        Route::get('/student/achievements', [StudentController::class, 'getAchievements']);
     });
 
     /*

@@ -191,63 +191,61 @@ class LeaderboardController extends Controller
             'notes_read_trend' => '+10 from last week'
         ];
 
-        // Phase 3: Read real streak for the current user (stored calendar days)
-        $userStreak = $studentProfile ? $studentProfile->streak_days : 0;
+        // Phase 6: Dynamic achievements using StudentBadge status
+        $unlockedBadges = LiveAttendance::where('student_id', $currentStudentId)->exists()
+            ? \App\Models\StudentBadge::where('student_id', $currentStudentId)->get()->keyBy('badge_id')
+            : collect();
 
         $achievements = [
             [
                 'id' => 'consistency-king',
                 'title' => 'Consistency King',
-                'requirement' => $userStreak . ' Day Streak',
-                'desc' => 'Studied consistently for consecutive days.',
-                'progress' => min(100, round(($userStreak / 30) * 100)),
-                'unlocked' => $userStreak >= 7,
+                'requirement' => $userStreak . ' / 5 Day Streak',
+                'desc' => 'Studied consistently for 5 consecutive days.',
+                'progress' => min(100, round(($userStreak / 5) * 100)),
+                'unlocked' => isset($unlockedBadges['consistency-king']),
                 'icon' => '👑',
-                'tag' => $userStreak . ' Day Streak',
+                'tag' => $userStreak . ' / 5 Days',
                 'color' => '#FFA500',
                 'tips' => 'Log in and complete at least one topic review every single day.'
             ],
             [
                 'id' => 'notes-master',
                 'title' => 'Notes Master',
-                'requirement' => 'Opened ' . ($userNotesCount + 20) . '+ Notes',
+                'requirement' => $userNotesCount . ' Notes Read',
                 'desc' => 'Actively explored library notes and files.',
-                'progress' => min(100, round((($userNotesCount + 20) / 100) * 100)),
-                'unlocked' => ($userNotesCount + 20) >= 15,
+                'progress' => min(100, round(($userNotesCount / 1) * 100)),
+                'unlocked' => isset($unlockedBadges['notes-master']),
                 'icon' => '📖',
-                'tag' => 'Opened ' . ($userNotesCount + 20) . '+ Notes',
+                'tag' => $userNotesCount . ' Notes Read',
                 'color' => '#8b5cf6',
                 'tips' => 'Visit the Library and read study notes regularly.'
             ],
             [
                 'id' => 'attendance-hero',
                 'title' => 'Attendance Hero',
-                'requirement' => $attendancePct . '%+ Attendance',
+                'requirement' => $attendancePct . '% Attendance',
                 'desc' => 'Remained active in real-time interactive lectures.',
                 'progress' => min(100, $attendancePct),
-                'unlocked' => $attendancePct >= 85,
+                'unlocked' => isset($unlockedBadges['attendance-hero']),
                 'icon' => '🔥',
                 'tag' => $attendancePct . '% Attendance',
                 'color' => '#10b981',
                 'tips' => 'Join live classes regularly.'
             ],
             [
-                'id' => 'qa-contributor',
-                'title' => 'Q&A Contributor',
-                'requirement' => '6 / 10 Completed',
-                'desc' => 'Answered peer questions in class forums.',
-                'progress' => 60,
-                'unlocked' => false,
-                'icon' => '💬',
-                'tag' => '6 / 10 Completed',
-                'color' => '#06b6d4',
-                'tips' => 'Help fellow students by answering questions.'
-            ],
-            [
-                'id' => 'night-owl',
-                'title' => 'Night Owl',
-                'requirement' => '3 / 10 Hours Completed',
-                'desc' => 'Studied during late night hours.',
+                'id' => 'quiz-genius',
+                'title' => 'Quiz Genius',
+                'requirement' => $userQuizAvg . '% Quiz Accuracy',
+                'desc' => 'Achieved high accuracy on weekly quiz assessments.',
+                'progress' => min(100, round(($userQuizAvg / 88) * 100)),
+                'unlocked' => isset($unlockedBadges['quiz-genius']),
+                'icon' => '🎯',
+                'tag' => $userQuizAvg . '% Accuracy',
+                'color' => '#ef4444',
+                'tips' => 'Review notes before attempting quizzes.'
+            ]
+        ];
                 'progress' => 30,
                 'unlocked' => false,
                 'icon' => '🦉',
