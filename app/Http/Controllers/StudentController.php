@@ -422,6 +422,60 @@ class StudentController extends Controller
 
     /*
     |--------------------------------------------------------------------------
+    | GET & TRACK STUDENT STUDY STATS
+    |--------------------------------------------------------------------------
+    */
+    public function getStudyStats()
+    {
+        $student = Student::where('user_id', auth()->id())->first();
+
+        if (!$student) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Student profile not found'
+            ], 404);
+        }
+
+        $stats = (new \App\Services\StudyTrackerService())->getWeeklyAndTotalStats($student);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Study stats fetched successfully',
+            'data'    => $stats
+        ], 200);
+    }
+
+    public function trackStudyTime(Request $request)
+    {
+        $request->validate([
+            'seconds'       => 'required|integer|min:1',
+            'activity_type' => 'nullable|string|max:50'
+        ]);
+
+        $student = Student::where('user_id', auth()->id())->first();
+
+        if (!$student) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Student profile not found'
+            ], 404);
+        }
+
+        $log = (new \App\Services\StudyTrackerService())->logStudyTime(
+            $student,
+            $request->seconds,
+            $request->get('activity_type', 'general')
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Study time tracked successfully',
+            'data'    => $log
+        ], 200);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
     | GET DYNAMIC ACHIEVEMENTS CATALOG
     |--------------------------------------------------------------------------
     */

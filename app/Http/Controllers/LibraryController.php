@@ -172,6 +172,9 @@ class LibraryController extends Controller
             (new XpService())->awardXp($student, 20, 'note', 'Completed study note: ' . ($note->title ?? 'Note'), $note->id);
         }
 
+        // Log 300s (5 mins) study time for reading study notes
+        (new \App\Services\StudyTrackerService())->logStudyTime($student, 300, 'note_reading');
+
         // Update streak — any note interaction (even re-completion) counts as study activity
         (new StudentStreakService())->updateStreak($student);
 
@@ -294,6 +297,9 @@ class LibraryController extends Controller
 
         // Award +30 XP for completing this quiz attempt
         (new XpService())->awardXp($this->student(), 30, 'quiz', 'Completed quiz assessment', $attempt->id);
+
+        // Log 600s (10 mins) study time for taking quiz attempt
+        (new \App\Services\StudyTrackerService())->logStudyTime($this->student(), 600, 'quiz_attempt');
 
         // Update streak — taking a quiz counts as study activity
         (new StudentStreakService())->updateStreak($this->student());

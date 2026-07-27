@@ -72,6 +72,8 @@ Route::middleware(['auth.session.api'])->group(function () {
         Route::get('/student/badges', [StudentController::class, 'getBadges']);
         Route::get('/student/achievements', [StudentController::class, 'getAchievements']);
         Route::get('/student/xp-history', [StudentController::class, 'getXpHistory']);
+        Route::get('/student/study-stats', [StudentController::class, 'getStudyStats']);
+        Route::post('/student/track-study-time', [StudentController::class, 'trackStudyTime']);
     });
 
     /*

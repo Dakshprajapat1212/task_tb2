@@ -85,6 +85,9 @@ class LiveAttendanceController extends Controller
             (new \App\Services\XpService())->awardXp($student, 20, 'live_class', 'Attended live class session', $attendance->id);
             $xpAwarded = 20;
 
+            // Log study duration (1800s / 30 mins) into student_study_logs
+            (new \App\Services\StudyTrackerService())->logStudyTime($student, 1800, 'live_class');
+
             // Trigger Streak increment as this counts as study activity
             $streakService = new StudentStreakService();
             $streakService->updateStreak($student);

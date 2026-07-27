@@ -94,4 +94,9 @@ class Student extends Model
     {
         return $this->hasMany(XpLog::class, 'student_id');
     }
+
+    public function studyLogs()
+    {
+        return $this->hasMany(StudentStudyLog::class, 'student_id');
+    }
 }
