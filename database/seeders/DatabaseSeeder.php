@@ -317,7 +317,7 @@ class DatabaseSeeder extends Seeder
                     'class_link' => 'https://meet.google.com/xyz-fake-link-' . rand(100, 999),
                     'class_date' => \Carbon\Carbon::today()->addDays(rand(1, 15))->format('Y-m-d'),
                     'start_time' => '10:00:00',
-                    'end_time'   => '12:00:00',
+                    'end_time' => '12:00:00',
                     'stream_url' => '/chemistry_lecture.mp4'
                 ]);
 
@@ -331,7 +331,6 @@ class DatabaseSeeder extends Seeder
                         'display_order' => $chIndex + 1,
                         'status' => 'active'
                     ]);
-
                     // Seed 2 Recordings for this Chapter (one with chapters timeline, one without)
                     Recording::create([
                         'class_id' => $classModel->id,
@@ -341,12 +340,13 @@ class DatabaseSeeder extends Seeder
                         'teacher_name' => $faculty->user->name,
                         'duration' => rand(30, 45),
                         'video_link' => '/chemistry_lecture.mp4',
-                        'chapters' => [
+                        // FIXED: Updated key to video_timestamps and serialized the array
+                        'video_timestamps' => json_encode([
                             ['name' => 'Introduction & Base Definition', 'time' => '00:00', 'sec' => 0],
                             ['name' => 'Core Rules & Formula Overview', 'time' => '05:10', 'sec' => 310],
                             ['name' => 'Classroom Exercises', 'time' => '12:45', 'sec' => 765],
                             ['name' => 'Summary & Q&A', 'time' => '20:15', 'sec' => 1215]
-                        ]
+                        ])
                     ]);
 
                     Recording::create([
@@ -357,7 +357,8 @@ class DatabaseSeeder extends Seeder
                         'teacher_name' => $faculty->user->name,
                         'duration' => rand(25, 40),
                         'video_link' => '/chemistry_lecture.mp4',
-                        'chapters' => null // No timeline chapters (hides tab)
+                        // FIXED: Updated key to video_timestamps
+                        'video_timestamps' => null // No timeline chapters (hides tab)
                     ]);
 
                     // Seed Homework assignments for this chapter
@@ -428,7 +429,7 @@ class DatabaseSeeder extends Seeder
         $this->command->info('Enrolling Students...');
         foreach ($students as $student) {
             $randomClasses = array_rand($classes, 2);
-            foreach ((array)$randomClasses as $classIdx) {
+            foreach ((array) $randomClasses as $classIdx) {
                 Enrollment::create([
                     'user_id' => $student->user_id,
                     'class_id' => $classes[$classIdx]->id,

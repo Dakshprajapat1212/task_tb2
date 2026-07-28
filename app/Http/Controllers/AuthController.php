@@ -130,9 +130,9 @@ class AuthController extends Controller
             |--------------------------------------------------------------------------
             */
 
-        if ($request->hasSession()) {
-            $request->session()->regenerate();
-        }
+            if ($request->hasSession()) {
+                $request->session()->regenerate();
+            }
 
             /*
             |--------------------------------------------------------------------------
@@ -227,13 +227,15 @@ class AuthController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        if (!Auth::attempt([
+        if (
+            !Auth::attempt([
 
-            'email' => $request->email,
+                'email' => $request->email,
 
-            'password' => $request->password
+                'password' => $request->password
 
-        ])) {
+            ])
+        ) {
 
             return response()->json([
 
@@ -346,24 +348,54 @@ class AuthController extends Controller
     |--------------------------------------------------------------------------
     */
 
+    // public function logout(Request $request)
+    // {
+    //     Auth::logout();
+
+    //     if ($request->hasSession()) {
+    //         $request->session()->invalidate();
+    //     }
+
+    //     if ($request->hasSession()) {
+    //         $request->session()->regenerateToken();
+    //     }
+
+    //     return response()->json([
+
+    //         'success' => true,
+
+    //         'message' => 'Logout successful'
+
+    //     ], 200);
+    // }
+
     public function logout(Request $request)
     {
-        Auth::logout();
+        $user = $request->user();
 
-        if ($request->hasSession()) {
-            $request->session()->invalidate();
+        if ($user) {
+            // 1. Handle Bearer Token Revocation (Mobile/API Clients)
+            // Checks if the user is authenticated via a Sanctum PersonalAccessToken
+            if (method_exists($user, 'currentAccessToken') && $user->currentAccessToken()) {
+                $user->currentAccessToken()->delete();
+            }
+
+            // 2. Handle Stateful Session Revocation (Web SPA / Blade Clients)
+            // Safely triggers logout only if the active guard supports it
+            if (Auth::guard('web')->check()) {
+                Auth::guard('web')->logout();
+            }
         }
 
+        // 3. Clear Cookie / Session Storage State Completely
         if ($request->hasSession()) {
+            $request->session()->invalidate();
             $request->session()->regenerateToken();
         }
 
         return response()->json([
-
             'success' => true,
-
             'message' => 'Logout successful'
-
         ], 200);
     }
 
@@ -408,7 +440,7 @@ class AuthController extends Controller
     {
         try {
             $googleUser = \Laravel\Socialite\Facades\Socialite::driver('google')->user();
-            
+
             $user = User::where('google_id', $googleUser->getId())
                 ->orWhere('email', $googleUser->getEmail())
                 ->first();
