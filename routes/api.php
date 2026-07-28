@@ -36,7 +36,7 @@ Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallbac
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth.session.api'])->group(function () {
+Route::middleware(['auth:sanctum'])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
@@ -47,6 +47,15 @@ Route::middleware(['auth.session.api'])->group(function () {
     Route::get('/me-test', function(\Illuminate\Http\Request $request) { return response()->json(['auth_header' => $request->header('Authorization')]); }); Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'user']);
     Route::get('/enrollments/{id}', [EnrollmentController::class, 'show']);
+
+    /*
+    |--------------------------------------------------------------------------
+    | SHARED DROPDOWN APIs (Student, Faculty, Admin)
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/library/classes', [LibraryController::class, 'classes']);
+    Route::get('/library/classes/{class}/subjects', [LibraryController::class, 'subjects']);
+    Route::get('/library/classes/{class}/subjects/{subject}/chapters', [LibraryController::class, 'chapters']);
 
     /*
     |--------------------------------------------------------------------------
@@ -166,9 +175,8 @@ Route::middleware(['auth.session.api'])->group(function () {
         |--------------------------------------------------------------------------
         */
 
-        Route::get('/library/classes', [LibraryController::class, 'classes']);
-        Route::get('/library/classes/{class}/subjects', [LibraryController::class, 'subjects']);
-        Route::get('/library/classes/{class}/subjects/{subject}/chapters', [LibraryController::class, 'chapters']);
+        // Dropdown APIs moved to Shared section above
+
         Route::get('/library/chapters/{chapter}/notes', [LibraryController::class, 'notes']);
         Route::get('/library/notes/{note}', [LibraryController::class, 'note']);
         Route::get('/library/notes/{note}/download', [LibraryController::class, 'downloadNote']);

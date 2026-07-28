@@ -19,12 +19,25 @@ class Recording extends Model
         'duration',
         'video_link',
         'teacher_name',
-        'chapters'
+        'video_timestamps'
     ];
 
     protected $casts = [
-        'chapters' => 'array'
+        'video_timestamps' => 'array'
     ];
+
+    protected $hidden = [
+        'video_timestamps'
+    ];
+
+    protected $appends = [
+        'timestamps'
+    ];
+
+    public function getTimestampsAttribute()
+    {
+        return $this->video_timestamps;
+    }
 
     /*
     |--------------------------------------------------------------------------

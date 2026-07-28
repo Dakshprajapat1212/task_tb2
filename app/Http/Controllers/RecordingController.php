@@ -50,19 +50,65 @@ class RecordingController extends Controller
     // POST /admin/recordings
     public function adminStore(Request $request)
     {
-      
+        if ($request->has('course')) {
+            $className = str_replace('Class', 'Grade', $request->course);
+            $classModel = ClassModel::where('name', $className)->first();
+            
+            if ($classModel) {
+                $request->merge(['class_id' => $classModel->id]);
+            }
+        }
+        
+        if ($request->has('subject')) {
+            $subjectModel = \App\Models\Subject::where('name', $request->subject)->first();
+            if ($subjectModel) {
+                $request->merge(['subject_id' => $subjectModel->id]);
+            }
+        }
+
+        if ($request->has('chapter')) {
+            $chapterModel = \App\Models\Chapter::where('title', $request->chapter)->first();
+            if ($chapterModel) {
+                $request->merge(['chapter_id' => $chapterModel->id]);
+            }
+        }
+        
+        if ($request->has('topic') && $request->has('title')) {
+            $request->merge(['topic' => substr($request->topic . ' - ' . $request->title, 0, 100)]);
+        } else if ($request->has('title')) {
+            $request->merge(['topic' => substr($request->title, 0, 100)]);
+        }
+        
+        if ($request->has('videoUrl')) {
+            $request->merge(['video_link' => $request->videoUrl]);
+        }
+        
+        if ($request->has('timestamps')) {
+            $request->merge(['video_timestamps' => $request->timestamps]);
+        }
+        
+        if (!$request->has('duration')) {
+            $request->merge(['duration' => 0]);
+        }
+
         $request->validate([
             'class_id' => 'required|exists:classes,id',
             'topic' => 'required|string|max:100',
-            'duration' => 'required|integer|min:1',
-            'video_link' => 'required|string'
+            'duration' => 'required|integer|min:0',
+            'video_link' => 'required|string',
+            'video_timestamps' => 'nullable|array',
+            'subject_id' => 'nullable|exists:subjects,id',
+            'chapter_id' => 'nullable|exists:chapters,id'
         ]);
 
         $recording = Recording::create([
             'class_id' => $request->class_id,
+            'subject_id' => $request->subject_id,
+            'chapter_id' => $request->chapter_id,
             'topic' => $request->topic,
             'duration' => $request->duration,
             'video_link' => $request->video_link,
+            'video_timestamps' => $request->video_timestamps,
         ]);
 
         return response()->json([
@@ -84,18 +130,65 @@ class RecordingController extends Controller
             ], 404);
         }
 
+        if ($request->has('course')) {
+            $className = str_replace('Class', 'Grade', $request->course);
+            $classModel = ClassModel::where('name', $className)->first();
+            
+            if ($classModel) {
+                $request->merge(['class_id' => $classModel->id]);
+            }
+        }
+        
+        if ($request->has('subject')) {
+            $subjectModel = \App\Models\Subject::where('name', $request->subject)->first();
+            if ($subjectModel) {
+                $request->merge(['subject_id' => $subjectModel->id]);
+            }
+        }
+
+        if ($request->has('chapter')) {
+            $chapterModel = \App\Models\Chapter::where('title', $request->chapter)->first();
+            if ($chapterModel) {
+                $request->merge(['chapter_id' => $chapterModel->id]);
+            }
+        }
+        
+        if ($request->has('topic') && $request->has('title')) {
+            $request->merge(['topic' => substr($request->topic . ' - ' . $request->title, 0, 100)]);
+        } else if ($request->has('title')) {
+            $request->merge(['topic' => substr($request->title, 0, 100)]);
+        }
+        
+        if ($request->has('videoUrl')) {
+            $request->merge(['video_link' => $request->videoUrl]);
+        }
+        
+        if ($request->has('timestamps')) {
+            $request->merge(['video_timestamps' => $request->timestamps]);
+        }
+        
+        if (!$request->has('duration')) {
+            $request->merge(['duration' => 0]);
+        }
+
         $request->validate([
             'class_id' => 'required|exists:classes,id',
             'topic' => 'required|string|max:100',
-            'duration' => 'required|integer|min:1',
-            'video_link' => 'required|string'
+            'duration' => 'required|integer|min:0',
+            'video_link' => 'required|string',
+            'video_timestamps' => 'nullable|array',
+            'subject_id' => 'nullable|exists:subjects,id',
+            'chapter_id' => 'nullable|exists:chapters,id'
         ]);
 
         $recording->update([
             'class_id' => $request->class_id,
+            'subject_id' => $request->subject_id,
+            'chapter_id' => $request->chapter_id,
             'topic' => $request->topic,
             'duration' => $request->duration,
             'video_link' => $request->video_link,
+            'video_timestamps' => $request->video_timestamps,
         ]);
 
         return response()->json([
@@ -152,17 +245,55 @@ class RecordingController extends Controller
     {
         $this->ensureFacultyOwnsClass($class_id);
 
+        if ($request->has('subject')) {
+            $subjectModel = \App\Models\Subject::where('name', $request->subject)->first();
+            if ($subjectModel) {
+                $request->merge(['subject_id' => $subjectModel->id]);
+            }
+        }
+
+        if ($request->has('chapter')) {
+            $chapterModel = \App\Models\Chapter::where('title', $request->chapter)->first();
+            if ($chapterModel) {
+                $request->merge(['chapter_id' => $chapterModel->id]);
+            }
+        }
+
+        if ($request->has('topic') && $request->has('title')) {
+            $request->merge(['topic' => substr($request->topic . ' - ' . $request->title, 0, 100)]);
+        } else if ($request->has('title')) {
+            $request->merge(['topic' => substr($request->title, 0, 100)]);
+        }
+        
+        if ($request->has('videoUrl')) {
+            $request->merge(['video_link' => $request->videoUrl]);
+        }
+        
+        if ($request->has('timestamps')) {
+            $request->merge(['video_timestamps' => $request->timestamps]);
+        }
+        
+        if (!$request->has('duration')) {
+            $request->merge(['duration' => 0]);
+        }
+
         $request->validate([
             'topic' => 'required|string|max:100',
-            'duration' => 'required|integer|min:1',
-            'video_link' => 'required|string'
+            'duration' => 'required|integer|min:0',
+            'video_link' => 'required|string',
+            'video_timestamps' => 'nullable|array',
+            'subject_id' => 'nullable|exists:subjects,id',
+            'chapter_id' => 'nullable|exists:chapters,id'
         ]);
 
         $recording = Recording::create([
             'class_id' => $class_id,
+            'subject_id' => $request->subject_id,
+            'chapter_id' => $request->chapter_id,
             'topic' => $request->topic,
             'duration' => $request->duration,
             'video_link' => $request->video_link,
+            'video_timestamps' => $request->video_timestamps,
         ]);
 
         return response()->json([
@@ -207,16 +338,54 @@ class RecordingController extends Controller
 
         $this->ensureFacultyOwnsClass($recording->class_id);
 
+        if ($request->has('subject')) {
+            $subjectModel = \App\Models\Subject::where('name', $request->subject)->first();
+            if ($subjectModel) {
+                $request->merge(['subject_id' => $subjectModel->id]);
+            }
+        }
+
+        if ($request->has('chapter')) {
+            $chapterModel = \App\Models\Chapter::where('title', $request->chapter)->first();
+            if ($chapterModel) {
+                $request->merge(['chapter_id' => $chapterModel->id]);
+            }
+        }
+
+        if ($request->has('topic') && $request->has('title')) {
+            $request->merge(['topic' => substr($request->topic . ' - ' . $request->title, 0, 100)]);
+        } else if ($request->has('title')) {
+            $request->merge(['topic' => substr($request->title, 0, 100)]);
+        }
+        
+        if ($request->has('videoUrl')) {
+            $request->merge(['video_link' => $request->videoUrl]);
+        }
+        
+        if ($request->has('timestamps')) {
+            $request->merge(['video_timestamps' => $request->timestamps]);
+        }
+        
+        if (!$request->has('duration')) {
+            $request->merge(['duration' => 0]);
+        }
+
         $request->validate([
             'topic' => 'required|string|max:100',
-            'duration' => 'required|integer|min:1',
-            'video_link' => 'required|string'
+            'duration' => 'required|integer|min:0',
+            'video_link' => 'required|string',
+            'video_timestamps' => 'nullable|array',
+            'subject_id' => 'nullable|exists:subjects,id',
+            'chapter_id' => 'nullable|exists:chapters,id'
         ]);
 
         $recording->update([
+            'subject_id' => $request->subject_id,
+            'chapter_id' => $request->chapter_id,
             'topic' => $request->topic,
             'duration' => $request->duration,
             'video_link' => $request->video_link,
+            'video_timestamps' => $request->video_timestamps,
         ]);
 
         return response()->json([
