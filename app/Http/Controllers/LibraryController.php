@@ -532,14 +532,24 @@ class LibraryController extends Controller
 
     private function approvedClassIds()
     {
-        return Enrollment::where('user_id', auth()->id())
+        $user = auth()->user();
+        if ($user->role_id == 3 || $user->role_id == 2) {
+            return ClassModel::pluck('id');
+        }
+
+        return Enrollment::where('user_id', $user->id)
             ->where('status', 'approved')
             ->pluck('class_id');
     }
 
     private function canAccessClass($classId): bool
     {
-        return Enrollment::where('user_id', auth()->id())
+        $user = auth()->user();
+        if ($user->role_id == 3 || $user->role_id == 2) {
+            return true;
+        }
+
+        return Enrollment::where('user_id', $user->id)
             ->where('class_id', $classId)
             ->where('status', 'approved')
             ->exists();

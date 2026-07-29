@@ -43,11 +43,15 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
+            // ADD THIS LINE: Tells Laravel to compile modern SQL grammar strings
+            'mariadb' => true,
 
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+
             ]) : [],
         ],
+
 
         'pgsql' => [
             'driver' => 'pgsql',
@@ -103,7 +107,7 @@ return [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
             'prefix' => env(
                 'REDIS_PREFIX',
-                Str::slug(env('APP_NAME', 'laravel'), '_').'_database_'
+                Str::slug(env('APP_NAME', 'laravel'), '_') . '_database_'
             ),
         ],
 

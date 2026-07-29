@@ -25,7 +25,7 @@ use App\Http\Controllers\HomeworkIssueController;
 */
 
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login',    [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login']);
 
 Route::get('/auth/google/redirect', [AuthController::class, 'redirectToGoogle']);
 Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback']);
@@ -36,7 +36,7 @@ Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallbac
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth.session.api'])->group(function () {
+Route::middleware(['auth:sanctum'])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
@@ -44,9 +44,20 @@ Route::middleware(['auth.session.api'])->group(function () {
     |--------------------------------------------------------------------------
     */
 
-    Route::get('/me-test', function(\Illuminate\Http\Request $request) { return response()->json(['auth_header' => $request->header('Authorization')]); }); Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/me-test', function (\Illuminate\Http\Request $request) {
+        return response()->json(['auth_header' => $request->header('Authorization')]); });
+    Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'user']);
     Route::get('/enrollments/{id}', [EnrollmentController::class, 'show']);
+
+    /*
+    |--------------------------------------------------------------------------
+    | SHARED DROPDOWN APIs (Student, Faculty, Admin)
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/library/classes', [LibraryController::class, 'classes']);
+    Route::get('/library/classes/{class}/subjects', [LibraryController::class, 'subjects']);
+    Route::get('/library/classes/{class}/subjects/{subject}/chapters', [LibraryController::class, 'chapters']);
 
     /*
     |--------------------------------------------------------------------------
@@ -61,8 +72,8 @@ Route::middleware(['auth.session.api'])->group(function () {
         // Student can fetch notes for a particular class (you already created classNotes)
         Route::get('/classes/{id}/notes', [NoteController::class, 'classNotes']);
 
-        Route::get('/my-enrollments',    [EnrollmentController::class, 'myEnrollments']);
-        Route::post('/enrollments',      [EnrollmentController::class, 'store']);
+        Route::get('/my-enrollments', [EnrollmentController::class, 'myEnrollments']);
+        Route::post('/enrollments', [EnrollmentController::class, 'store']);
         Route::get('/available-classes', [ClassController::class, 'index']);
 
         // Student Profile API (Step 1)
@@ -103,7 +114,7 @@ Route::middleware(['auth.session.api'])->group(function () {
         */
 
         // Student sees notes for ALL their approved classes (your NoteController@index)
-        Route::get('/notes',      [NoteController::class, 'index']);
+        Route::get('/notes', [NoteController::class, 'index']);
         Route::get('/notes/{id}', [NoteController::class, 'show']);
 
         /*
@@ -129,7 +140,7 @@ Route::middleware(['auth.session.api'])->group(function () {
         |--------------------------------------------------------------------------
         */
 
-        Route::get('/assign-homeworks',      [AssignHomeworkController::class, 'index']);
+        Route::get('/assign-homeworks', [AssignHomeworkController::class, 'index']);
         Route::get('/assign-homeworks/{id}', [AssignHomeworkController::class, 'show']);
 
         /*
@@ -139,7 +150,7 @@ Route::middleware(['auth.session.api'])->group(function () {
         */
 
         Route::get('/submit-homeworks', [SubmitHomeworkController::class, 'index']);
-        Route::post('/submit-homeworks',[SubmitHomeworkController::class, 'store']);
+        Route::post('/submit-homeworks', [SubmitHomeworkController::class, 'store']);
         Route::post('/homework-issues', [HomeworkIssueController::class, 'store']);
 
         /*
@@ -148,7 +159,7 @@ Route::middleware(['auth.session.api'])->group(function () {
         |--------------------------------------------------------------------------
         */
 
-        Route::post('/student/live-attendance/join',     [\App\Http\Controllers\LiveAttendanceController::class, 'join']);
+        Route::post('/student/live-attendance/join', [\App\Http\Controllers\LiveAttendanceController::class, 'join']);
         Route::post('/student/live-attendance/complete', [\App\Http\Controllers\LiveAttendanceController::class, 'complete']);
 
         /*
@@ -157,7 +168,7 @@ Route::middleware(['auth.session.api'])->group(function () {
         |--------------------------------------------------------------------------
         */
 
-        Route::get('/subjects',      [SubjectController::class, 'index']);
+        Route::get('/subjects', [SubjectController::class, 'index']);
         Route::get('/subjects/{id}', [SubjectController::class, 'show']);
 
         /*
@@ -166,9 +177,8 @@ Route::middleware(['auth.session.api'])->group(function () {
         |--------------------------------------------------------------------------
         */
 
-        Route::get('/library/classes', [LibraryController::class, 'classes']);
-        Route::get('/library/classes/{class}/subjects', [LibraryController::class, 'subjects']);
-        Route::get('/library/classes/{class}/subjects/{subject}/chapters', [LibraryController::class, 'chapters']);
+        // Dropdown APIs moved to Shared section above
+
         Route::get('/library/chapters/{chapter}/notes', [LibraryController::class, 'notes']);
         Route::get('/library/notes/{note}', [LibraryController::class, 'note']);
         Route::get('/library/notes/{note}/download', [LibraryController::class, 'downloadNote']);
@@ -206,10 +216,10 @@ Route::middleware(['auth.session.api'])->group(function () {
 
         //check my classses 
 
-      Route::get(
-    '/faculty/my-classes',
-    [ClassController::class, 'facultyClasses']
-);
+        Route::get(
+            '/faculty/my-classes',
+            [ClassController::class, 'facultyClasses']
+        );
         /*
         |--------------------------------------------------------------------------
         | RECORDINGS (Faculty) ✅ FIXED (no conflict now)
@@ -247,11 +257,11 @@ Route::middleware(['auth.session.api'])->group(function () {
         |--------------------------------------------------------------------------
         */
 
-        Route::get('/notes',        [NoteController::class, 'index']);
-        Route::get('/notes/{id}',   [NoteController::class, 'show']);
-        Route::post('/notes',       [NoteController::class, 'store']);
-        Route::put('/notes/{id}',   [NoteController::class, 'update']);
-        Route::delete('/notes/{id}',[NoteController::class, 'destroy']);
+        Route::get('/notes', [NoteController::class, 'index']);
+        Route::get('/notes/{id}', [NoteController::class, 'show']);
+        Route::post('/notes', [NoteController::class, 'store']);
+        Route::put('/notes/{id}', [NoteController::class, 'update']);
+        Route::delete('/notes/{id}', [NoteController::class, 'destroy']);
 
         /*
         |--------------------------------------------------------------------------
@@ -259,11 +269,11 @@ Route::middleware(['auth.session.api'])->group(function () {
         |--------------------------------------------------------------------------
         */
 
-        Route::get('/assign-homeworks',       [AssignHomeworkController::class, 'index']);
-        Route::get('/assign-homeworks/{id}',  [AssignHomeworkController::class, 'show']);
-        Route::post('/assign-homeworks',      [AssignHomeworkController::class, 'store']);
-        Route::put('/assign-homeworks/{id}',  [AssignHomeworkController::class, 'update']);
-        Route::delete('/assign-homeworks/{id}',[AssignHomeworkController::class, 'destroy']);
+        Route::get('/assign-homeworks', [AssignHomeworkController::class, 'index']);
+        Route::get('/assign-homeworks/{id}', [AssignHomeworkController::class, 'show']);
+        Route::post('/assign-homeworks', [AssignHomeworkController::class, 'store']);
+        Route::put('/assign-homeworks/{id}', [AssignHomeworkController::class, 'update']);
+        Route::delete('/assign-homeworks/{id}', [AssignHomeworkController::class, 'destroy']);
 
         /*
         |--------------------------------------------------------------------------
@@ -271,7 +281,7 @@ Route::middleware(['auth.session.api'])->group(function () {
         |--------------------------------------------------------------------------
         */
 
-        Route::get('/submit-homeworks',      [SubmitHomeworkController::class, 'index']);
+        Route::get('/submit-homeworks', [SubmitHomeworkController::class, 'index']);
         Route::put('/submit-homeworks/{id}', [SubmitHomeworkController::class, 'update']);
 
         /*
@@ -298,11 +308,11 @@ Route::middleware(['auth.session.api'])->group(function () {
         |--------------------------------------------------------------------------
         */
 
-        Route::get('/admin/recordings',        [RecordingController::class, 'adminIndex']);
-        Route::get('/admin/recordings/{id}',   [RecordingController::class, 'adminShow']);
-        Route::post('/admin/recordings',       [RecordingController::class, 'adminStore']);
-        Route::put('/admin/recordings/{id}',   [RecordingController::class, 'adminUpdate']);
-        Route::delete('/admin/recordings/{id}',[RecordingController::class, 'adminDestroy']);
+        Route::get('/admin/recordings', [RecordingController::class, 'adminIndex']);
+        Route::get('/admin/recordings/{id}', [RecordingController::class, 'adminShow']);
+        Route::post('/admin/recordings', [RecordingController::class, 'adminStore']);
+        Route::put('/admin/recordings/{id}', [RecordingController::class, 'adminUpdate']);
+        Route::delete('/admin/recordings/{id}', [RecordingController::class, 'adminDestroy']);
 
         /*
         |--------------------------------------------------------------------------
@@ -310,11 +320,11 @@ Route::middleware(['auth.session.api'])->group(function () {
         |--------------------------------------------------------------------------
         */
 
-        Route::get('/users',        [UserController::class, 'index']);
-        Route::post('/users',       [UserController::class, 'store']);
-        Route::get('/users/{id}',   [UserController::class, 'show']);
-        Route::put('/users/{id}',   [UserController::class, 'update']);
-        Route::delete('/users/{id}',[UserController::class, 'destroy']);
+        Route::get('/users', [UserController::class, 'index']);
+        Route::post('/users', [UserController::class, 'store']);
+        Route::get('/users/{id}', [UserController::class, 'show']);
+        Route::put('/users/{id}', [UserController::class, 'update']);
+        Route::delete('/users/{id}', [UserController::class, 'destroy']);
 
         /*
         |--------------------------------------------------------------------------
@@ -322,9 +332,9 @@ Route::middleware(['auth.session.api'])->group(function () {
         |--------------------------------------------------------------------------
         */
 
-        Route::get('/students',         [StudentController::class, 'index']);
-        Route::post('/students',        [StudentController::class, 'store']);
-        Route::put('/students/{id}',    [StudentController::class, 'update']);
+        Route::get('/students', [StudentController::class, 'index']);
+        Route::post('/students', [StudentController::class, 'store']);
+        Route::put('/students/{id}', [StudentController::class, 'update']);
         Route::delete('/students/{id}', [StudentController::class, 'destroy']);
 
         /*
@@ -333,9 +343,9 @@ Route::middleware(['auth.session.api'])->group(function () {
         |--------------------------------------------------------------------------
         */
 
-        Route::get('/enrollments',          [EnrollmentController::class, 'index']);
-        Route::put('/enrollments/{id}',     [EnrollmentController::class, 'update']);
-        Route::delete('/enrollments/{id}',  [EnrollmentController::class, 'destroy']);
+        Route::get('/enrollments', [EnrollmentController::class, 'index']);
+        Route::put('/enrollments/{id}', [EnrollmentController::class, 'update']);
+        Route::delete('/enrollments/{id}', [EnrollmentController::class, 'destroy']);
 
         /*
         |--------------------------------------------------------------------------
@@ -343,10 +353,10 @@ Route::middleware(['auth.session.api'])->group(function () {
         |--------------------------------------------------------------------------
         */
 
-        Route::get('/faculties',         [FacultyController::class, 'index']);
-        Route::post('/faculties',        [FacultyController::class, 'store']);
-        Route::get('/faculties/{id}',    [FacultyController::class, 'show']);
-        Route::put('/faculties/{id}',    [FacultyController::class, 'update']);
+        Route::get('/faculties', [FacultyController::class, 'index']);
+        Route::post('/faculties', [FacultyController::class, 'store']);
+        Route::get('/faculties/{id}', [FacultyController::class, 'show']);
+        Route::put('/faculties/{id}', [FacultyController::class, 'update']);
         Route::delete('/faculties/{id}', [FacultyController::class, 'destroy']);
 
         /*
@@ -355,10 +365,10 @@ Route::middleware(['auth.session.api'])->group(function () {
         |--------------------------------------------------------------------------
         */
 
-        Route::get('/subjects',         [SubjectController::class, 'index']);
-        Route::post('/subjects',        [SubjectController::class, 'store']);
-        Route::get('/subjects/{id}',    [SubjectController::class, 'show']);
-        Route::put('/subjects/{id}',    [SubjectController::class, 'update']);
+        Route::get('/subjects', [SubjectController::class, 'index']);
+        Route::post('/subjects', [SubjectController::class, 'store']);
+        Route::get('/subjects/{id}', [SubjectController::class, 'show']);
+        Route::put('/subjects/{id}', [SubjectController::class, 'update']);
         Route::delete('/subjects/{id}', [SubjectController::class, 'destroy']);
 
         /*
@@ -367,10 +377,10 @@ Route::middleware(['auth.session.api'])->group(function () {
         |--------------------------------------------------------------------------
         */
 
-        Route::get('/classes',         [ClassController::class, 'index']);
-        Route::post('/classes',        [ClassController::class, 'store']);
-        Route::get('/classes/{id}',    [ClassController::class, 'show']);
-        Route::put('/classes/{id}',    [ClassController::class, 'update']);
+        Route::get('/classes', [ClassController::class, 'index']);
+        Route::post('/classes', [ClassController::class, 'store']);
+        Route::get('/classes/{id}', [ClassController::class, 'show']);
+        Route::put('/classes/{id}', [ClassController::class, 'update']);
         Route::delete('/classes/{id}', [ClassController::class, 'destroy']);
         Route::post('/classes/{id}/assign-subject', [ClassController::class, 'assignSubject']);
 
@@ -380,11 +390,11 @@ Route::middleware(['auth.session.api'])->group(function () {
         |--------------------------------------------------------------------------
         */
 
-        Route::get('/notes',          [NoteController::class, 'index']);
-        Route::get('/notes/{id}',     [NoteController::class, 'show']);
-        Route::post('/notes',         [NoteController::class, 'store']);
-        Route::put('/notes/{id}',     [NoteController::class, 'update']);
-        Route::delete('/notes/{id}',  [NoteController::class, 'destroy']);
+        Route::get('/notes', [NoteController::class, 'index']);
+        Route::get('/notes/{id}', [NoteController::class, 'show']);
+        Route::post('/notes', [NoteController::class, 'store']);
+        Route::put('/notes/{id}', [NoteController::class, 'update']);
+        Route::delete('/notes/{id}', [NoteController::class, 'destroy']);
 
         /*
         |--------------------------------------------------------------------------
@@ -392,11 +402,11 @@ Route::middleware(['auth.session.api'])->group(function () {
         |--------------------------------------------------------------------------
         */
 
-        Route::get('/assign-homeworks',        [AssignHomeworkController::class, 'index']);
-        Route::get('/assign-homeworks/{id}',   [AssignHomeworkController::class, 'show']);
-        Route::post('/assign-homeworks',       [AssignHomeworkController::class, 'store']);
-        Route::put('/assign-homeworks/{id}',   [AssignHomeworkController::class, 'update']);
-        Route::delete('/assign-homeworks/{id}',[AssignHomeworkController::class, 'destroy']);
+        Route::get('/assign-homeworks', [AssignHomeworkController::class, 'index']);
+        Route::get('/assign-homeworks/{id}', [AssignHomeworkController::class, 'show']);
+        Route::post('/assign-homeworks', [AssignHomeworkController::class, 'store']);
+        Route::put('/assign-homeworks/{id}', [AssignHomeworkController::class, 'update']);
+        Route::delete('/assign-homeworks/{id}', [AssignHomeworkController::class, 'destroy']);
 
         /*
         |--------------------------------------------------------------------------
@@ -404,7 +414,7 @@ Route::middleware(['auth.session.api'])->group(function () {
         |--------------------------------------------------------------------------
         */
 
-        Route::get('/submit-homeworks',      [SubmitHomeworkController::class, 'index']);
+        Route::get('/submit-homeworks', [SubmitHomeworkController::class, 'index']);
         Route::put('/submit-homeworks/{id}', [SubmitHomeworkController::class, 'update']);
 
         /*
@@ -413,10 +423,10 @@ Route::middleware(['auth.session.api'])->group(function () {
         |--------------------------------------------------------------------------
         */
 
-        Route::get('/mas-roles',         [MasRoleController::class, 'index']);
-        Route::post('/mas-roles',        [MasRoleController::class, 'store']);
-        Route::get('/mas-roles/{id}',    [MasRoleController::class, 'show']);
-        Route::put('/mas-roles/{id}',    [MasRoleController::class, 'update']);
+        Route::get('/mas-roles', [MasRoleController::class, 'index']);
+        Route::post('/mas-roles', [MasRoleController::class, 'store']);
+        Route::get('/mas-roles/{id}', [MasRoleController::class, 'show']);
+        Route::put('/mas-roles/{id}', [MasRoleController::class, 'update']);
         Route::delete('/mas-roles/{id}', [MasRoleController::class, 'destroy']);
 
         /*
@@ -448,23 +458,23 @@ Route::middleware(['auth.session.api'])->group(function () {
 
     Route::get('/classes/{id}', [ClassController::class, 'show']);
 
-    Route::get('/subjects',      [SubjectController::class, 'index']);
+    Route::get('/subjects', [SubjectController::class, 'index']);
     Route::get('/subjects/{id}', [SubjectController::class, 'show']);
 
-    Route::get('/notes',          [NoteController::class, 'index']);
-    Route::get('/notes/{id}',     [NoteController::class, 'show']);
-    Route::post('/notes',         [NoteController::class, 'store']);
-    Route::put('/notes/{id}',     [NoteController::class, 'update']);
-    Route::delete('/notes/{id}',  [NoteController::class, 'destroy']);
+    Route::get('/notes', [NoteController::class, 'index']);
+    Route::get('/notes/{id}', [NoteController::class, 'show']);
+    Route::post('/notes', [NoteController::class, 'store']);
+    Route::put('/notes/{id}', [NoteController::class, 'update']);
+    Route::delete('/notes/{id}', [NoteController::class, 'destroy']);
 
-    Route::get('/assign-homeworks',        [AssignHomeworkController::class, 'index']);
-    Route::get('/assign-homeworks/{id}',   [AssignHomeworkController::class, 'show']);
-    Route::post('/assign-homeworks',       [AssignHomeworkController::class, 'store']);
-    Route::put('/assign-homeworks/{id}',   [AssignHomeworkController::class, 'update']);
-    Route::delete('/assign-homeworks/{id}',[AssignHomeworkController::class, 'destroy']);
+    Route::get('/assign-homeworks', [AssignHomeworkController::class, 'index']);
+    Route::get('/assign-homeworks/{id}', [AssignHomeworkController::class, 'show']);
+    Route::post('/assign-homeworks', [AssignHomeworkController::class, 'store']);
+    Route::put('/assign-homeworks/{id}', [AssignHomeworkController::class, 'update']);
+    Route::delete('/assign-homeworks/{id}', [AssignHomeworkController::class, 'destroy']);
 
-    Route::get('/submit-homeworks',      [SubmitHomeworkController::class, 'index']);
-    Route::post('/submit-homeworks',     [SubmitHomeworkController::class, 'store']);
+    Route::get('/submit-homeworks', [SubmitHomeworkController::class, 'index']);
+    Route::post('/submit-homeworks', [SubmitHomeworkController::class, 'store']);
     Route::put('/submit-homeworks/{id}', [SubmitHomeworkController::class, 'update']);
 
     /*
