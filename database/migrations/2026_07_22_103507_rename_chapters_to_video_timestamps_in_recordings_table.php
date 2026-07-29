@@ -3,9 +3,9 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -14,7 +14,8 @@ return new class extends Migration
     public function up()
     {
         Schema::table('recordings', function (Blueprint $table) {
-            \Illuminate\Support\Facades\DB::statement('ALTER TABLE recordings RENAME COLUMN chapters TO video_timestamps');
+            // Standard MariaDB syntax: CHANGE old_column new_column DATA_TYPE
+            DB::statement('ALTER TABLE recordings CHANGE chapters video_timestamps TEXT NULL');
         });
     }
 
@@ -26,7 +27,8 @@ return new class extends Migration
     public function down()
     {
         Schema::table('recordings', function (Blueprint $table) {
-            \Illuminate\Support\Facades\DB::statement('ALTER TABLE recordings RENAME COLUMN video_timestamps TO chapters');
+            // Reverts it back safely if you roll back
+            DB::statement('ALTER TABLE recordings CHANGE video_timestamps chapters TEXT NULL');
         });
     }
 };
