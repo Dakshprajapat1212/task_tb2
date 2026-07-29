@@ -46,9 +46,9 @@ return [
             // ADD THIS LINE: Tells Laravel to compile modern SQL grammar strings
             'mariadb' => true,
 
-            // FIXED: Using global \PDO constants prevents crashes when driver is disabled
             'options' => extension_loaded('pdo_mysql') ? array_filter([
-                \PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+
             ]) : [],
         ],
 
