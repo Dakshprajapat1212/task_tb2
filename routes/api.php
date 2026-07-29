@@ -288,6 +288,7 @@ Route::middleware(['auth.session.api'])->group(function () {
     | ADMIN ROUTES
     |--------------------------------------------------------------------------
     */
+Route::middleware(['auth.session.api'])->group(function () {
 
     Route::middleware(['isAdmin'])->group(function () {
 
@@ -426,6 +427,7 @@ Route::middleware(['auth.session.api'])->group(function () {
         Route::get('/admin/doubts', [\App\Http\Controllers\DoubtController::class, 'adminIndex']);
         Route::post('/admin/doubts/{id}/answer', [\App\Http\Controllers\DoubtController::class, 'adminAnswer']);
     });
+});
 
     /*
     |--------------------------------------------------------------------------
