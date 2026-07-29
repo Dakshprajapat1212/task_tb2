@@ -17,9 +17,23 @@ class RecordingController extends Controller
     */
 
     // GET /admin/recordings
-    public function adminIndex()
+    public function adminIndex(Request $request)
     {
-        $recordings = Recording::with('class')->get();
+        $query = Recording::with(['class', 'subject', 'chapter']);
+
+        if ($request->has('class_id')) {
+            $query->where('class_id', $request->class_id);
+        }
+
+        if ($request->has('subject_id')) {
+            $query->where('subject_id', $request->subject_id);
+        }
+
+        if ($request->has('chapter_id')) {
+            $query->where('chapter_id', $request->chapter_id);
+        }
+
+        $recordings = $query->get();
 
         return response()->json([
             'success' => true,
