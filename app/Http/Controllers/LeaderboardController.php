@@ -8,6 +8,8 @@ use App\Models\SubmitHomework;
 use App\Models\QuizAttempt;
 use App\Models\Enrollment;
 use App\Models\LiveAttendance;
+use App\Models\Recording;
+use App\Models\StudentBadge;
 use Illuminate\Http\Request;
 
 class LeaderboardController extends Controller
@@ -15,6 +17,13 @@ class LeaderboardController extends Controller
     public function index(Request $request)
     {
         $currentUser = auth()->user();
+        if (!$currentUser) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthenticated'
+            ], 401);
+        }
+
         $studentProfile = Student::where('user_id', $currentUser->id)->first();
 
         // Scope to user's enrolled classes or all students
@@ -38,7 +47,7 @@ class LeaderboardController extends Controller
             $userName = $student->user ? $student->user->name : 'Student #' . $student->id;
 
             // Phase 2: Read XP directly from students.xp (stored, not recalculated)
-            $totalXp = $student->xp;
+            $totalXp = $student->xp ?? 0;
 
             // Still needed for avgMark and badge thresholds:
             $notesCompleted = StudentNoteProgress::where('student_id', $student->id)->count();
@@ -55,7 +64,7 @@ class LeaderboardController extends Controller
             $totalQuizzes = $quizAttempts->count();
 
             // Phase 3: Read real streak directly from students.streak_days (stored calendar days)
-            $streakDays = $student->streak_days;
+            $streakDays = $student->streak_days ?? 0;
 
             $totalEvaluated = $totalQuizzes + $approvedSubmissions->count();
             $avgMark = $totalEvaluated > 0
@@ -67,7 +76,7 @@ class LeaderboardController extends Controller
                 ->where('status', 'approved')
                 ->pluck('class_id');
 
-            $totalRecordingsCount = \App\Models\Recording::whereIn('class_id', $studentClassIds)->count();
+            $totalRecordingsCount = Recording::whereIn('class_id', $studentClassIds)->count();
 
             if ($totalRecordingsCount == 0) {
                 $studentAttendancePct = 95; // Default high baseline if no recordings exist yet
@@ -80,21 +89,21 @@ class LeaderboardController extends Controller
             }
 
             // Phase 5: Fetch persisted badges directly from student_badges table
-            $badges = \App\Models\StudentBadge::where('student_id', $student->id)->pluck('title')->toArray();
+            $badges = StudentBadge::where('student_id', $student->id)->pluck('title')->toArray();
 
             $isCurrentUser = $studentProfile && ($student->id === $studentProfile->id);
 
             $xpRankings[] = [
-                'id'            => $student->id,
-                'name'          => $userName,
-                'xp'            => $totalXp,
-                'streak'        => $streakDays,
-                'attendance'    => $studentAttendancePct,
-                'avatar'        => null,
+                'id' => $student->id,
+                'name' => $userName,
+                'xp' => $totalXp,
+                'streak' => $streakDays,
+                'attendance' => $studentAttendancePct,
+                'avatar' => null,
                 'isCurrentUser' => $isCurrentUser,
-                'xpBreakdown'   => [
+                'xpBreakdown' => [
                     'total' => $totalXp,
-                    'note'  => 'XP is stored and awarded in real-time (Phase 2)',
+                    'note' => 'XP is stored and awarded in real-time (Phase 2)',
                 ],
                 'badges' => array_values(array_unique($badges))
             ];
@@ -104,7 +113,7 @@ class LeaderboardController extends Controller
                 'name' => $userName,
                 'avgMark' => $avgMark,
                 'solved' => $totalEvaluated + 15,
-                'attendance' => $studentAttendancePct, // Bug Fix #3: was hardcoded 92
+                'attendance' => $studentAttendancePct,
                 'avatar' => null,
                 'isCurrentUser' => $isCurrentUser,
                 'marksBreakdown' => [
@@ -133,6 +142,7 @@ class LeaderboardController extends Controller
                 default => null
             };
         }
+        unset($item);
 
         // Sort Academic rankings descending
         usort($academicRankings, function ($a, $b) {
@@ -150,10 +160,12 @@ class LeaderboardController extends Controller
                 default => null
             };
         }
+        unset($item);
 
         // --- Performance Overview & Achievements for Current User ---
         $currentStudentId = $studentProfile ? $studentProfile->id : ($students->first() ? $students->first()->id : 1);
-        
+        $userStreak = $studentProfile ? ($studentProfile->streak_days ?? 0) : 0;
+
         $userNotesCount = StudentNoteProgress::where('student_id', $currentStudentId)->count();
         $userSubmissionsCount = SubmitHomework::where('student_id', $currentStudentId)->where('status', 'approved')->count();
         $userQuizAttempts = QuizAttempt::where('student_id', $currentStudentId)->get();
@@ -167,7 +179,7 @@ class LeaderboardController extends Controller
             ->where('status', 'approved')
             ->pluck('class_id');
 
-        $totalClasses = \App\Models\Recording::whereIn('class_id', $userClassIds)->count();
+        $totalClasses = Recording::whereIn('class_id', $userClassIds)->count();
         $classesAttended = LiveAttendance::where('student_id', $currentStudentId)
             ->whereIn('class_id', $userClassIds)
             ->whereNotNull('completed_at')
@@ -192,9 +204,9 @@ class LeaderboardController extends Controller
         ];
 
         // Phase 6: Dynamic achievements using StudentBadge status
-        $unlockedBadges = LiveAttendance::where('student_id', $currentStudentId)->exists()
-            ? \App\Models\StudentBadge::where('student_id', $currentStudentId)->get()->keyBy('badge_id')
-            : collect();
+        $unlockedBadges = StudentBadge::where('student_id', $currentStudentId)
+            ->get()
+            ->keyBy('badge_id');
 
         $achievements = [
             [
@@ -244,10 +256,14 @@ class LeaderboardController extends Controller
                 'tag' => $userQuizAvg . '% Accuracy',
                 'color' => '#ef4444',
                 'tips' => 'Review notes before attempting quizzes.'
-            ]
-        ];
+            ],
+            [
+                'id' => 'night-owl',
+                'title' => 'Night Owl',
+                'requirement' => '3 / 10 Hours Completed',
+                'desc' => 'Log late-night study sessions after 10 PM.',
                 'progress' => 30,
-                'unlocked' => false,
+                'unlocked' => isset($unlockedBadges['night-owl']),
                 'icon' => '🦉',
                 'tag' => '3 / 10 Hours Completed',
                 'color' => '#3b82f6',
