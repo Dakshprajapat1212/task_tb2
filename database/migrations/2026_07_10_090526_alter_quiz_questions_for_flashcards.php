@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -16,27 +15,31 @@ return new class extends Migration
         Schema::table('quiz_questions', function (Blueprint $table) {
             $table->enum('question_type', ['mcq', 'flashcard'])->default('mcq')->after('question');
             $table->text('correct_answer')->nullable()->after('correct_option');
-        });
 
-        // Use raw SQL to modify columns to nullable to avoid DBAL
-        \Illuminate\Support\Facades\DB::statement("ALTER TABLE quiz_questions MODIFY option_a VARCHAR(255) NULL");
-        \Illuminate\Support\Facades\DB::statement("ALTER TABLE quiz_questions MODIFY option_b VARCHAR(255) NULL");
-        \Illuminate\Support\Facades\DB::statement("ALTER TABLE quiz_questions MODIFY option_c VARCHAR(255) NULL");
-        \Illuminate\Support\Facades\DB::statement("ALTER TABLE quiz_questions MODIFY option_d VARCHAR(255) NULL");
-        \Illuminate\Support\Facades\DB::statement("ALTER TABLE quiz_questions MODIFY correct_option ENUM('a', 'b', 'c', 'd') NULL");
+            // Make option columns and correct_option nullable
+            $table->string('option_a')->nullable()->change();
+            $table->string('option_b')->nullable()->change();
+            $table->string('option_c')->nullable()->change();
+            $table->string('option_d')->nullable()->change();
+            $table->string('correct_option')->nullable()->change();
+        });
     }
 
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
     public function down()
     {
-        \Illuminate\Support\Facades\DB::statement("ALTER TABLE quiz_questions MODIFY option_a VARCHAR(255) NOT NULL");
-        \Illuminate\Support\Facades\DB::statement("ALTER TABLE quiz_questions MODIFY option_b VARCHAR(255) NOT NULL");
-        \Illuminate\Support\Facades\DB::statement("ALTER TABLE quiz_questions MODIFY option_c VARCHAR(255) NOT NULL");
-        \Illuminate\Support\Facades\DB::statement("ALTER TABLE quiz_questions MODIFY option_d VARCHAR(255) NOT NULL");
-        \Illuminate\Support\Facades\DB::statement("ALTER TABLE quiz_questions MODIFY correct_option ENUM('a', 'b', 'c', 'd') NOT NULL");
-        
         Schema::table('quiz_questions', function (Blueprint $table) {
-            $table->dropColumn('question_type');
-            $table->dropColumn('correct_answer');
+            $table->string('option_a')->nullable(false)->change();
+            $table->string('option_b')->nullable(false)->change();
+            $table->string('option_c')->nullable(false)->change();
+            $table->string('option_d')->nullable(false)->change();
+            $table->string('correct_option')->nullable(false)->change();
+
+            $table->dropColumn(['question_type', 'correct_answer']);
         });
     }
 };
