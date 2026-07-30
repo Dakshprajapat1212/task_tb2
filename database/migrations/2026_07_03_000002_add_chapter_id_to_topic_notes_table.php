@@ -5,8 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     public function up(): void
     {
         Schema::table('topic_notes', function (Blueprint $table) {
@@ -17,13 +16,17 @@ return new class extends Migration
                 ->nullOnDelete();
         });
 
-        DB::table('topic_notes')
-            ->join('chapters', function ($join) {
-                $join->on('topic_notes.class_id', '=', 'chapters.class_id')
-                    ->on('topic_notes.subject_id', '=', 'chapters.subject_id')
-                    ->on('topic_notes.chapter', '=', 'chapters.title');
-            })
-            ->update(['topic_notes.chapter_id' => DB::raw('chapters.id')]);
+        // Cross-database compatible backfill (SQLite, MySQL, PostgreSQL)
+        $chapters = DB::table('chapters')->get(['id', 'class_id', 'subject_id', 'title']);
+
+        foreach ($chapters as $chapter) {
+            DB::table('topic_notes')
+                ->where('class_id', $chapter->class_id)
+                ->where('subject_id', $chapter->subject_id)
+                ->where('chapter', $chapter->title)
+                ->whereNull('chapter_id')
+                ->update(['chapter_id' => $chapter->id]);
+        }
     }
 
     public function down(): void

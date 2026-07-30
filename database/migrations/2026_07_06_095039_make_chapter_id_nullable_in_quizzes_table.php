@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -13,14 +12,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        \Illuminate\Support\Facades\DB::statement('ALTER TABLE quizzes MODIFY chapter_id BIGINT UNSIGNED NULL');
+        Schema::table('quizzes', function (Blueprint $table) {
+            $table->unsignedBigInteger('chapter_id')->nullable()->change();
+        });
     }
 
     /**
      * Reverse the migrations.
+     *
+     * @return void
      */
     public function down(): void
     {
-        \Illuminate\Support\Facades\DB::statement('ALTER TABLE quizzes MODIFY chapter_id BIGINT UNSIGNED NOT NULL');
+        Schema::table('quizzes', function (Blueprint $table) {
+            $table->unsignedBigInteger('chapter_id')->nullable(false)->change();
+        });
     }
 };
